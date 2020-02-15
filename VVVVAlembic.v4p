@@ -35,6 +35,10 @@
    </PIN>
    <PIN pinname="Geometry Out" visible="1">
    </PIN>
+   <PIN pinname="Time" visible="1">
+   </PIN>
+   <PIN pinname="value Out" visible="1">
+   </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="5" systemname="IOBox (Value Advanced)">
    <BOUNDS type="Box" left="4425" top="1650" width="480" height="480">
@@ -83,5 +87,33 @@
    <LINK srcnodeid="4" srcpinname="Geometry Out" dstnodeid="7" dstpinname="Input Node">
    </LINK>
    <LINK srcnodeid="5" srcpinname="Y Output Value" dstnodeid="4" dstpinname="Reload">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="8" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="3375" top="1395" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="3375" top="1395" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
+   </PIN>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Time">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="8" srcpinname="Y Output Value" dstnodeid="4" dstpinname="Time">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="9" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="4590" top="4725" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="4590" top="4725" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="4" srcpinname="value Out" dstnodeid="9" dstpinname="Y Input Value">
    </LINK>
    </PATCH>

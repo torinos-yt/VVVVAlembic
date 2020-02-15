@@ -52,11 +52,17 @@ namespace VVVV
 			[Input("Filename", IsSingle = true, StringType = StringType::Filename )]
 			Pin<String^>^ FPath;
 
+			[Input("Time", IsSingle = true, DefaultValue = 0.0)]
+			IDiffSpread<float>^ FTime;
+
 			[Input("Reload", IsSingle = true, IsBang = true)]
 			ISpread<bool>^ FReload;
 
 			[Output("Geometry Out")]
 			ISpread<DX11Resource<DX11IndexedGeometry^>^>^ FOutgeo;
+
+			[Output("value Out")]
+			ISpread<double>^ FOut;
 
 			[Import()]
 			ILogger^ FLogger;
@@ -68,7 +74,10 @@ namespace VVVV
 		private:
 
 			IArchive *m_archive;
+			IPolyMesh *m_mesh;
 			//vector<std::unique_ptr<Alembic::Abc::IObject>> m_children;
+
+			bool FFirst = true;
 		};
 	}
 }
