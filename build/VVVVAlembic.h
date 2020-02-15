@@ -1,6 +1,4 @@
 #pragma once
-#include <system_error>
-
 #include <Alembic\AbcGeom\IPolyMesh.h>
 #include <Alembic\AbcGeom\IXform.h>
 #include <Alembic\AbcGeom\ICurves.h>

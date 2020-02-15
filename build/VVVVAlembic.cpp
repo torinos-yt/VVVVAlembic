@@ -43,8 +43,8 @@ namespace VVVV
 							string name = child.getName();
 							if (IPolyMesh::matches(xform.getChildHeader(0)))
 							{
-								IPolyMesh pmesh(child);
-								IPolyMeshSchema mesh = pmesh.getSchema();
+								m_mesh = new IPolyMesh(child);
+								IPolyMeshSchema mesh = m_mesh->getSchema();
 								MeshTopologyVariance top = mesh.getTopologyVariance();
 								FLogger->Log(LogType::Debug, marshal_as<String^>(ToporogyArray[top]));
 
@@ -69,6 +69,8 @@ namespace VVVV
 
 		void VVVVAlembicReader::Update(DX11RenderContext^ context)
 		{
+			Device^ device = context->Device;
+			DeviceContext^ deviceContext = context->CurrentDeviceContext;
 
 		}
 
