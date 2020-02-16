@@ -18,7 +18,6 @@ using namespace System::ComponentModel::Composition;
 
 using namespace VVVV::PluginInterfaces::V1;
 using namespace VVVV::PluginInterfaces::V2;
-using namespace VVVV::Utils::Streams;
 
 using namespace VVVV::Core::Logging;
 
@@ -32,7 +31,6 @@ using DX11Buffer = SlimDX::Direct3D11::Buffer;
 using namespace FeralTic::DX11;
 using namespace FeralTic::DX11::Resources;
 using namespace FeralTic::DX11::Geometry;
-using namespace FeralTic::DX11::Utils;
 
 using namespace Alembic;
 using namespace Alembic::AbcGeom;
@@ -61,6 +59,9 @@ namespace VVVV
 
             [Output("Geometry Out")]
             ISpread<DX11Resource<IDX11Geometry^>^>^ FOutgeo;
+
+            [Output("Message")]
+            ISpread<String^>^ FMessage;
 
             [Import()]
             ILogger^ FLogger;

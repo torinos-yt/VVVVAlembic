@@ -41,6 +41,8 @@
    </PIN>
    <PIN pinname="Debug Geo" visible="1">
    </PIN>
+   <PIN pinname="Message" visible="1">
+   </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="5" systemname="IOBox (Value Advanced)">
    <BOUNDS type="Box" left="4290" top="2700" width="480" height="480">
@@ -109,6 +111,8 @@
    </PIN>
    <PIN pinname="Layer" visible="1">
    </PIN>
+   <PIN pinname="Render State" visible="1">
+   </PIN>
    </NODE>
    <NODE systemname="PerfMeter (Debug)" filename="%VVVV%\lib\nodes\modules\Debug\PerfMeter (Debug).v4p" nodename="PerfMeter (Debug)" componentmode="Hidden" id="14">
    <BOUNDS type="Node" left="5685" top="870" width="100" height="100">
@@ -147,7 +151,7 @@
    </BOUNDS>
    <PIN pinname="Output" visible="1">
    </PIN>
-   <PIN pinname="Period" slicecount="1" values="6">
+   <PIN pinname="Period" slicecount="1" values="14">
    </PIN>
    <PIN pinname="Pause" visible="1">
    </PIN>
@@ -161,7 +165,7 @@
    </PIN>
    <PIN pinname="Output" visible="1">
    </PIN>
-   <PIN pinname="Input 2" slicecount="1" values="12">
+   <PIN pinname="Input 2" slicecount="1" values="22">
    </PIN>
    </NODE>
    <LINK srcnodeid="17" srcpinname="Output" dstnodeid="18" dstpinname="Input 1">
@@ -211,7 +215,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="990" top="615" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input String" slicecount="2" visible="1" values="C:\Users\iryut\Desktop\simMesh3.abc,C:\Users\iryut\Desktop\testHomoG.abc">
+   <PIN pinname="Input String" slicecount="2" visible="1" values="C:\Users\iryut\Desktop\Rot.abc,C:\Users\iryut\Desktop\testHomoG.abc">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="||">
    </PIN>
@@ -307,5 +311,31 @@
    <LINK srcnodeid="29" srcpinname="Y Output Value" dstnodeid="17" dstpinname="Pause">
    </LINK>
    <LINK srcnodeid="4" srcpinname="Geometry Out" dstnodeid="11" dstpinname="Geometry">
+   </LINK>
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="30" systemname="IOBox (String)">
+   <BOUNDS type="Box" left="3780" top="3900" width="1305" height="270">
+   </BOUNDS>
+   <BOUNDS type="Node" left="3780" top="3900" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="4" srcpinname="Message" dstnodeid="30" dstpinname="Input String">
+   </LINK>
+   <NODE systemname="Rasterizer (DX11.RenderState)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Rasterizer (DX11.RenderState)" componentmode="Hidden" id="31">
+   <BOUNDS type="Node" left="1830" top="4155" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="1830" top="4155" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Render State" visible="1" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Mode" slicecount="1" values="BackCullSimple">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="31" srcpinname="Render State" dstnodeid="11" dstpinname="Render State">
    </LINK>
    </PATCH>
