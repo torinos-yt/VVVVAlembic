@@ -43,56 +43,51 @@ using namespace std;
 
 namespace VVVV
 {
-	namespace Nodes
-	{
-		[PluginInfo(Name = "Alembic File", Category = "DX11.Geometry Alembic", Tags = "")]
-		public ref class VVVVAlembicReader : public IPluginEvaluate, IDX11ResourceHost
-		{
-		public:
+    namespace Nodes
+    {
+        [PluginInfo(Name = "Alembic File", Category = "DX11.Geometry Alembic", Tags = "")]
+        public ref class VVVVAlembicReader : public IPluginEvaluate, IDX11ResourceHost
+        {
+        public:
 
-			[Input("Filename", IsSingle = true, StringType = StringType::Filename )]
-			Pin<String^>^ FPath;
+            [Input("Filename", IsSingle = true, StringType = StringType::Filename )]
+            Pin<String^>^ FPath;
 
-			[Input("Time", IsSingle = true, DefaultValue = 0.0)]
-			IDiffSpread<float>^ FTime;
+            [Input("Time", IsSingle = true, DefaultValue = 0.0)]
+            IDiffSpread<float>^ FTime;
 
-			[Input("Reload", IsSingle = true, IsBang = true)]
-			ISpread<bool>^ FReload;
+            [Input("Reload", IsSingle = true, IsBang = true)]
+            ISpread<bool>^ FReload;
 
-			//[Input("Debug Geo", IsSingle = true)]
-			//Pin<DX11Resource<DX11IndexedGeometry^>^>^ FDgeo;
+            [Output("Geometry Out")]
+            ISpread<DX11Resource<IDX11Geometry^>^>^ FOutgeo;
 
-			[Output("Geometry Out")]
-			ISpread<DX11Resource<DX11IndexedGeometry^>^>^ FOutgeo;
+            [Import()]
+            ILogger^ FLogger;
 
-			[Import()]
-			ILogger^ FLogger;
+            void Evaluate(int SpreadMax) override;
+            void Update(DX11RenderContext^ context) override;
+            void Destroy(DX11RenderContext^ context, bool force) override;
 
-			void Evaluate(int SpreadMax) override;
-			void Update(DX11RenderContext^ context) override;
-			void Destroy(DX11RenderContext^ context, bool force) override;
+        private:
 
-		private:
+            IArchive *m_archive;
+            IPolyMesh *m_mesh;
 
-			IArchive *m_archive;
-			IPolyMesh *m_mesh;
-			//vector<std::unique_ptr<Alembic::Abc::IObject>> m_children;
+            bool FFirst = true;
 
-			bool FFirst = true;
-
-			DataStream^ vertexStream;
-			DataStream^ indexStream;
-			size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
-		};
-	}
+            DataStream^ vertexStream;
+            size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
+        };
+    }
 }
 
 
 string ToporogyArray[5] =
 {
-	"kConstantTopology",     //0
-	"kHomogenousTopology",   //1
-	"kHomogeneousTopology",  //2
-	"kHeterogenousTopology", //3
-	"kHeterogeneousTopology" //4
+    "kConstantTopology",     //0
+    "kHomogenousTopology",   //1
+    "kHomogeneousTopology",  //2
+    "kHeterogenousTopology", //3
+    "kHeterogeneousTopology" //4
 };
