@@ -32,6 +32,7 @@ using DX11Buffer = SlimDX::Direct3D11::Buffer;
 using namespace FeralTic::DX11;
 using namespace FeralTic::DX11::Resources;
 using namespace FeralTic::DX11::Geometry;
+using namespace FeralTic::DX11::Utils;
 
 using namespace Alembic;
 using namespace Alembic::AbcGeom;
@@ -58,11 +59,11 @@ namespace VVVV
 			[Input("Reload", IsSingle = true, IsBang = true)]
 			ISpread<bool>^ FReload;
 
+			//[Input("Debug Geo", IsSingle = true)]
+			//Pin<DX11Resource<DX11IndexedGeometry^>^>^ FDgeo;
+
 			[Output("Geometry Out")]
 			ISpread<DX11Resource<DX11IndexedGeometry^>^>^ FOutgeo;
-
-			[Output("value Out")]
-			ISpread<double>^ FOut;
 
 			[Import()]
 			ILogger^ FLogger;
@@ -78,6 +79,10 @@ namespace VVVV
 			//vector<std::unique_ptr<Alembic::Abc::IObject>> m_children;
 
 			bool FFirst = true;
+
+			DataStream^ vertexStream;
+			DataStream^ indexStream;
+			size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
 		};
 	}
 }
@@ -85,9 +90,9 @@ namespace VVVV
 
 string ToporogyArray[5] =
 {
-	"kConstantTopology",
-	"kHomogenousTopology",
-	"kHomogeneousTopology",
-	"kHeterogenousTopology",
-	"kHeterogeneousTopology"
+	"kConstantTopology",     //0
+	"kHomogenousTopology",   //1
+	"kHomogeneousTopology",  //2
+	"kHeterogenousTopology", //3
+	"kHeterogeneousTopology" //4
 };
