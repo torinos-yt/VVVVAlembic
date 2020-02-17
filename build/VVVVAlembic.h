@@ -48,7 +48,7 @@ namespace VVVV
         {
         public:
 
-            [Input("Filename", IsSingle = true, StringType = StringType::Filename )]
+            [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename )]
             Pin<String^>^ FPath;
 
             [Input("Time", IsSingle = true, DefaultValue = 0.0)]

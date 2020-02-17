@@ -14,13 +14,17 @@ namespace VVVV
             if (!FOutgeo[0])
                 FOutgeo[0] = gcnew DX11Resource<IDX11Geometry^>();
 
-            if ((FPath->IsChanged || FReload[0]))
+            if (FFirst) FPath->Sync();
+
+            String^ prevPath = FPath[0];
+            FPath->Sync();
+            if ( (FPath[0] != prevPath) || FReload[0] || (FFirst && FPath[0] != "") )
             {
                 try
                 {
                     delete m_archive;
                     m_archive = new IArchive(AbcCoreOgawa::ReadArchive(), marshal_as<string>(FPath[0]),
-                        Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
+                                            Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
                     FLogger->Log(LogType::Debug, "Success : Load Alembic Ogawa");
                 }
                 catch (Alembic::Util::Exception e)
@@ -36,8 +40,7 @@ namespace VVVV
             Device^ device = context->Device;
             DeviceContext^ deviceContext = context->CurrentDeviceContext;
 
-            if ((m_archive->valid() && FTime->IsChanged) || FReload[0] 
-                 || (FFirst && m_archive->valid()) )
+            if ( (FTime->IsChanged || FReload[0] || FFirst) && m_archive->valid() )
             {
                 delete FOutgeo[0][context];
                 auto geom = gcnew DX11VertexGeometry(context);
@@ -76,6 +79,7 @@ namespace VVVV
                             {
                                 IsIndexedNormal = true;
                                 FMessage[0] = "Not Support : Indexed Normal";
+                                FLogger->Log(LogType::Debug, "Not Support : Indexed Normal");
                                 return;
                             }
                             N3fArraySamplePtr m_norms = N.getExpandedValue(ss).getVals();
@@ -99,8 +103,13 @@ namespace VVVV
                             size_t nPts = m_points->size();
                             size_t nInds = m_indices->size();
                             size_t nFace = m_faceCounts->size();
-
-                            if (nPts < 1 || nInds < 1 || nFace < 1) return;
+                            if (nPts < 1 || nInds < 1 || nFace < 1)
+                            {
+                                FOutgeo[0][context] = (IDX11Geometry^)geom;
+                                FMessage[0] = "Not Valid Geometry";
+                                FLogger->Log(LogType::Debug, "Not Valid Geometry");
+                                return;
+                            }
 
                             using tri = Imath::Vec3<unsigned int>;
                             using triArray = std::vector<tri>;
@@ -137,7 +146,7 @@ namespace VVVV
                             }
 
                             if (vertexStream != nullptr) delete vertexStream;
-                            vertexStream = gcnew DataStream(m_triangles.size() * 3 * vertexSize, true, true);
+                            vertexStream = gcnew DataStream(m_triangles.size()*3*vertexSize, true, true);
                             vertexStream->Position = 0;
 
                             {
@@ -242,16 +251,16 @@ namespace VVVV
                     }
                 }
 
-                if(FFirst) FFirst = false;
-
                 FOutgeo[0][context] = (IDX11Geometry^)geom;
             }
 
-            if (!FPath->IsConnected)
+            if (FPath[0] == "")
             {
                 FOutgeo->SliceCount = 0;
                 FMessage->SliceCount = 0;
             }
+
+            if (FFirst) FFirst = false;
         }
 
         void VVVVAlembicReader::Destroy(DX11RenderContext^ context, bool force)

@@ -313,7 +313,7 @@
    <LINK srcnodeid="4" srcpinname="Geometry Out" dstnodeid="11" dstpinname="Geometry">
    </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="30" systemname="IOBox (String)">
-   <BOUNDS type="Box" left="3780" top="3900" width="1305" height="270">
+   <BOUNDS type="Box" left="3780" top="3900" width="1545" height="270">
    </BOUNDS>
    <BOUNDS type="Node" left="3780" top="3900" width="0" height="0">
    </BOUNDS>
