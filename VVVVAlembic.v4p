@@ -215,7 +215,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="990" top="615" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Input String" slicecount="2" visible="1" values="C:\Users\iryut\Desktop\Rot.abc,C:\Users\iryut\Desktop\testHomoG.abc">
+   <PIN pinname="Input String" slicecount="2" visible="1" values="abcFile\Rot.abc,abcFile\simMesh2.abc">
    </PIN>
    <PIN pinname="Default" slicecount="1" values="||">
    </PIN>
@@ -251,7 +251,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="1935" top="1290" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
    </PIN>
    <PIN pinname="Units" slicecount="1" values="||">
    </PIN>
@@ -261,7 +261,7 @@
    </PIN>
    <PIN pinname="Behavior" slicecount="1" values="Toggle">
    </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="0">
+   <PIN pinname="X Input Value" slicecount="1" values="1">
    </PIN>
    </NODE>
    <LINK srcnodeid="26" srcpinname="Y Output Value" dstnodeid="25" dstpinname="Index">

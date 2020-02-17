@@ -2,7 +2,15 @@
 *~.xml
 
 # binary files
-nodes/plugins/
+nodes/plugins/*
+!nodes/plugins/Alembic.dll
+!nodes/plugins/Half.dll
+!nodes/plugins/Iex-2_2.dll
+!nodes/plugins/IexMath-2_2.dll
+!nodes/plugins/IlmThread-2_2.dll
+!nodes/plugins/Imath-2_2.dll
+!nodes/plugins/zlib.dll
+
 
 # Visual Studio
 # User-specific files

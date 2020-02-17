@@ -132,14 +132,14 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>F:\vvvv\work\VVVVAlembic\build\lib\include\OpenEXR;F:\vvvv\work\VVVVAlembic\build\lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)lib\include\OpenEXR;$(SolutionDir)lib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <AdditionalDependencies>Alembic.lib;Iex-2_2.lib;IexMath-2_2.lib;IlmThread-2_2.lib;Half.lib;Imath-2_2.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>F:\vvvv\work\VVVVAlembic\build\lib\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalLibraryDirectories>$(SolutionDir)lib\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
@@ -147,7 +147,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="FeralTic">
-      <HintPath>..\..\..\vvvv_beta_39_x64\packs\dx11\core\FeralTic.dll</HintPath>
+      <HintPath>lib\dll\FeralTic.dll</HintPath>
     </Reference>
     <Reference Include="SlimDX">
       <HintPath>lib\dll\SlimDX.dll</HintPath>
@@ -183,10 +183,10 @@
       <HintPath>packages\VVVV.Core.34.2.0\lib\net40\VVVV.Core.dll</HintPath>
     </Reference>
     <Reference Include="VVVV.DX11.Core">
-      <HintPath>..\..\..\vvvv_beta_39_x64\packs\dx11\core\VVVV.DX11.Core.dll</HintPath>
+      <HintPath>lib\dll\VVVV.DX11.Core.dll</HintPath>
     </Reference>
     <Reference Include="VVVV.DX11.Lib">
-      <HintPath>..\..\..\vvvv_beta_39_x64\packs\dx11\core\VVVV.DX11.Lib.dll</HintPath>
+      <HintPath>lib\dll\VVVV.DX11.Lib.dll</HintPath>
     </Reference>
     <Reference Include="VVVV.PluginInterfaces">
       <HintPath>packages\VVVV.PluginInterfaces.34.2.0\build\net40\lib\x64\VVVV.PluginInterfaces.dll</HintPath>
