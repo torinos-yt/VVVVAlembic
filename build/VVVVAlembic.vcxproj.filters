@@ -20,7 +20,7 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IGeom.h">
+    <ClInclude Include="abcrGeom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -196,7 +196,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="IGeom.h" />
+    <ClInclude Include="abcrGeom.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="VVVVAlembic.h" />
