@@ -10,6 +10,8 @@
 #include <Alembic\Util\All.h>
 #include <Alembic\AbcCoreOgawa\All.h>
 
+#include "abcrGeom.h"
+
 
 using namespace System;
 using namespace System::Collections;
@@ -41,46 +43,53 @@ using namespace std;
 
 namespace VVVV
 {
-    namespace Nodes
+namespace Nodes
+{
+namespace abcr
+{
+
+    [PluginInfo(Name = "Alembic File", Category = "DX11.Geometry Alembic", Tags = "")]
+    public ref class VVVVAlembicReader : public IPluginEvaluate, IDX11ResourceHost
     {
-        [PluginInfo(Name = "Alembic File", Category = "DX11.Geometry Alembic", Tags = "")]
-        public ref class VVVVAlembicReader : public IPluginEvaluate, IDX11ResourceHost
-        {
-        public:
+    public:
 
-            [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename )]
-            Pin<String^>^ FPath;
+        [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename)]
+        Pin<String^>^ FPath;
 
-            [Input("Time", IsSingle = true, DefaultValue = 0.0)]
-            IDiffSpread<float>^ FTime;
+        [Input("Time", IsSingle = true, DefaultValue = 0.0)]
+        IDiffSpread<float>^ FTime;
 
-            [Input("Reload", IsSingle = true, IsBang = true)]
-            ISpread<bool>^ FReload;
+        [Input("Reload", IsSingle = true, IsBang = true)]
+        ISpread<bool>^ FReload;
 
-            [Output("Geometry Out")]
-            ISpread<DX11Resource<IDX11Geometry^>^>^ FOutgeo;
+        [Output("Geometry Out")]
+        ISpread<DX11Resource<IDX11Geometry^>^>^ FOutgeo;
 
-            [Output("Message")]
-            ISpread<String^>^ FMessage;
+        [Output("Message")]
+        ISpread<String^>^ FMessage;
 
-            [Import()]
-            ILogger^ FLogger;
+        [Import()]
+        ILogger^ FLogger;
 
-            void Evaluate(int SpreadMax) override;
-            void Update(DX11RenderContext^ context) override;
-            void Destroy(DX11RenderContext^ context, bool force) override;
+        void Evaluate(int SpreadMax) override;
+        void Update(DX11RenderContext^ context) override;
+        void Destroy(DX11RenderContext^ context, bool force) override;
 
-        private:
+    private:
 
-            IArchive *m_archive;
-            IPolyMesh *m_mesh;
+        abcrGeom* m_root;
 
-            bool FFirst = true;
+        IArchive* m_archive;
+        IPolyMesh* m_mesh;
 
-            DataStream^ vertexStream;
-            size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
-        };
-    }
+        bool FFirst = true;
+
+        DataStream^ vertexStream;
+        size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
+    };
+
+}
+}
 }
 
 
