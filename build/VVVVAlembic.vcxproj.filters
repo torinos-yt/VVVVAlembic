@@ -20,6 +20,9 @@
     <ClInclude Include="abcrGeom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LayoutType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VVVVAlembic.cpp">

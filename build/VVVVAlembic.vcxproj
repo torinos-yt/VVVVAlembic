@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="abcrGeom.h" />
+    <ClInclude Include="LayoutType.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="VVVVAlembic.h" />
   </ItemGroup>

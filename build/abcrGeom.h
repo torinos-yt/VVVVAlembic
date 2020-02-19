@@ -1,12 +1,25 @@
 #pragma once
+#include <gcroot.h>
+
 #include <Alembic\Abc\All.h>
 #include <Alembic\AbcGeom\IPolyMesh.h>
 #include <Alembic\AbcGeom\IPoints.h>
 #include <Alembic\AbcGeom\ICurves.h>
 #include <Alembic\AbcGeom\IXForm.h>
 
+#include "layoutType.h"
+
 using namespace Alembic;
 using namespace Alembic::Abc;
+
+using namespace SlimDX;
+using namespace SlimDX::Direct3D11;
+
+using DX11Buffer = SlimDX::Direct3D11::Buffer;
+
+using namespace FeralTic::DX11;
+using namespace FeralTic::DX11::Resources;
+using namespace FeralTic::DX11::Geometry;
 
 namespace VVVV
 {
@@ -61,7 +74,9 @@ namespace abcr
 
         size_t getIndex() const { return index; };
 
-        string getName() const;
+        string getName() const { return m_obj.getName(); };
+
+        string getFullName() const { return m_obj.getFullName(); };
 
         IObject getIObject() const { return m_obj; };
 
@@ -102,6 +117,7 @@ namespace abcr
         public:
 
             XForm(AbcGeom::IXform xform);
+
     };
 
     class Points : public abcrGeom
@@ -123,6 +139,26 @@ namespace abcr
     public:
 
         PolyMesh(AbcGeom::IPolyMesh pmesh);
+        ~PolyMesh()
+        {
+            if (m_polymesh) m_polymesh.reset();
+        }
+
+        const char* getTypeNmae() const { return "PolyMesh"; }
+
+        void set(DX11RenderContext^ context, DX11VertexGeometry^& geom, chrono_t time);
+
+    private:
+
+        bool hasRGB;
+        bool hasRGBA;
+
+        AbcGeom::IPolyMesh m_polymesh;
+        AbcGeom::IC3fGeomParam m_rgb;
+        AbcGeom::IC4fGeomParam m_rgba;
+        
+        size_t vertexSize;
+        gcroot<array<InputElement>^> Layout;
     };
 
 }
