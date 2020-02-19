@@ -11,5 +11,7 @@ Currently only supports animation meshes with a single geometry with normals and
 
 It supports quad porigon and n-gons by triangulating when importing, but it is recommended to import a triangles only mesh.
 
+Tested only .abc File by Houdini Rop Alembic Node.
+
 ## Installation
 puts release package or built whole source repository in VVVV packs folder.
