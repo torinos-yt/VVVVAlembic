@@ -14,13 +14,13 @@
     <ClInclude Include="VVVVAlembic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="abcrGeom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LayoutType.h">
+    <ClInclude Include="abcrUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="abcrLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,6 +32,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="abcrGeom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="abcrUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

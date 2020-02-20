@@ -10,7 +10,7 @@ namespace abcr
 
     abcrGeom::abcrGeom() : type(UNKNOWN) {}
 
-    abcrGeom::abcrGeom(IObject obj) : m_obj(obj), type(UNKNOWN) {}
+    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context) : m_obj(obj), m_context(context), type(UNKNOWN) {}
 
     abcrGeom::~abcrGeom()
     {
@@ -29,12 +29,12 @@ namespace abcr
 
         for (size_t i = 0; i < numChild; ++i)
         {
-            auto* child = geom->newChild(obj.getChild(i));
+            auto* child = geom->newChild(obj.getChild(i), geom->m_context);
             setUpNodeRecursive(child);
         }
     }
 
-    abcrGeom* abcrGeom::newChild(const IObject& obj)
+    abcrGeom* abcrGeom::newChild(const IObject& obj, DX11RenderContext^ context)
     {
         abcrGeom* geom = nullptr;
         if (obj.valid())
@@ -44,22 +44,22 @@ namespace abcr
             if (AbcGeom::IXformSchema::matches(meta))
             {
                 AbcGeom::IXform xform(obj, obj.getName());
-                geom = new abcr::XForm(xform);
+                geom = new abcr::XForm(xform, context);
             }
             else if (AbcGeom::IPointsSchema::matches(meta))
             {
                 AbcGeom::IPoints points(obj, obj.getName());
-                geom = new abcr::Points(points);
+                geom = new abcr::Points(points, context);
             }
             else if (AbcGeom::ICurvesSchema::matches(meta))
             {
                 AbcGeom::ICurves curves(obj, obj.getName());
-                geom = new abcr::Curves(curves);
+                geom = new abcr::Curves(curves, context);
             }
             else if (AbcGeom::IPolyMeshSchema::matches(meta))
             {
                 AbcGeom::IPolyMesh pmesh(obj, obj.getName());
-                geom = new abcr::PolyMesh(pmesh);
+                geom = new abcr::PolyMesh(pmesh, context);
             }
             else
             {
@@ -72,15 +72,95 @@ namespace abcr
         return geom;
     }
 
-    PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh) : abcrGeom(pmesh), m_polymesh(pmesh)
+    template<typename T>
+    void abcrGeom::setMinMaxTime(T& obj)
+    {
+        TimeSamplingPtr tptr = obj.getSchema().getTimeSampling();
+        constant = obj.getSchema().isConstant();
+        if (!constant)
+        {
+            size_t nSamples = obj.getSchema().getNumSamples();
+            if (nSamples > 0)
+            {
+                m_minTime = tptr->getSampleTime(0);
+                m_maxTime = tptr->getSampleTime(nSamples - 1);
+            }
+        }
+
+        
+    }
+
+    void abcrGeom::updateTimeSample(chrono_t time, Imath::M44f& transform)
+    {
+        set(time, transform);
+        this->transform = transform;
+
+        for (size_t i = 0; i < m_children.size(); ++i)
+        {
+            Imath::M44f m = transform;
+            m_children[i]->updateTimeSample(time, m);
+        }
+    }
+
+    XForm::XForm(AbcGeom::IXform xform, DX11RenderContext^ context) : abcrGeom(xform, context), m_xform(xform)
+    {
+        type = XFORM;
+        setMinMaxTime(m_xform);
+    }
+
+    Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context) : abcrGeom(points, context), m_points(points)
+    {
+        type = POINTS;
+        setMinMaxTime(m_points);
+    }
+
+    void Points::set(chrono_t time, Imath::M44f& transform)
+    {
+        if (static_cast<ISpread<Vector3D>^>(this->points) == nullptr)
+        {
+            points = gcnew Spread<Vector3D>();
+        }
+
+        AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
+        AbcGeom::IPointsSchema::Sample pts_sample;
+
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+
+        AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
+        AbcGeom::IPointsSchema::Sample pts_sample;
+
+        ptSchema.get(pts_sample, ss);
+
+        P3fArraySamplePtr m_positions = pts_sample.getPositions();
+
+        size_t nPts = m_positions->size();
+        const V3f* src = m_positions->get();
+
+        this->points->SliceCount = nPts;
+        
+        for (size_t i = 0; i < nPts; i++)
+        {
+            const V3f& v = src[i];
+            static_cast<ISpread<Vector3D>^>(this->points)[0] = Vector3D(v.x, v.y, v.z);
+        }
+    }
+
+    Curves::Curves(AbcGeom::ICurves curves, DX11RenderContext^ context) : abcrGeom(curves, context), m_curves(curves)
+    {
+        type = CURVES;
+        setMinMaxTime(m_curves);
+    }
+
+    PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context) : abcrGeom(pmesh, context), m_polymesh(pmesh)
     {
         type = POLYMESH;
         hasRGB = false;
         hasRGBA = false;
+        setMinMaxTime(m_polymesh);
 
         auto geomParam = pmesh.getSchema().getArbGeomParams();
-        size_t numParam = geomParam.getNumProperties();
-        for (size_t i = 0; i < numParam; ++i)
+        size_t nParam = geomParam.getNumProperties();
+        for (size_t i = 0; i < nParam; ++i)
         {
             auto& head = geomParam.getPropertyHeader(i);
 
@@ -104,14 +184,26 @@ namespace abcr
             vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
             Layout = Pos3Norm3Tex2Vertex::Layout;
         }
+
+        if (pmesh.getSchema().isConstant()) 
+        {
+            this->set(m_minTime, this->transform);
+        }
     }
 
-    void PolyMesh::set(DX11RenderContext^ context, DX11VertexGeometry^& geom, chrono_t time)
+    void PolyMesh::set(chrono_t time, Imath::M44f& transform)
     {
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        if (static_cast<DX11VertexGeometry^>(this->geom) == nullptr)
+        {
+            this->geom = gcnew DX11VertexGeometry();
+        }
 
         AbcGeom::IPolyMeshSchema mesh = m_polymesh.getSchema();
         AbcGeom::IPolyMeshSchema::Sample mesh_samp;
+
+        if (mesh.isConstant()) return;
+
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
         
         mesh.get(mesh_samp, ss);
 
@@ -208,10 +300,10 @@ namespace abcr
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[uvInds[t[0]]];
                         const C3f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col3Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y),
-                                                            SlimDX::Vector3(col0.x, col0.y, col0.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p0 = { toSlimDX(v0) ,
+                                                              toSlimDX(n0) ,
+                                                              toSlimDX(uv0),
+                                                              toSlimDX(col0) };
 
                         vertexStream->Write(p0);
 
@@ -219,10 +311,10 @@ namespace abcr
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[uvInds[t[1]]];
                         const C3f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col3Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y),
-                                                            SlimDX::Vector3(col1.x, col1.y, col1.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p1 = { toSlimDX(v1) ,
+                                                              toSlimDX(n1) ,
+                                                              toSlimDX(uv1),
+                                                              toSlimDX(col1) };
 
                         vertexStream->Write(p1);
 
@@ -230,10 +322,10 @@ namespace abcr
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[uvInds[t[2]]];
                         const C3f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col3Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y),
-                                                            SlimDX::Vector3(col2.x, col2.y, col2.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p2 = { toSlimDX(v2) ,
+                                                              toSlimDX(n2) ,
+                                                              toSlimDX(uv2),
+                                                              toSlimDX(col2) };
 
                         vertexStream->Write(p2);
                     }
@@ -251,10 +343,10 @@ namespace abcr
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[uvInds[t[0]]];
                         const C4f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col4Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y),
-                                                            SlimDX::Vector4(col0.r, col0.g, col0.b, col0.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p0 = { toSlimDX(v0) ,
+                                                              toSlimDX(n0) ,
+                                                              toSlimDX(uv0),
+                                                              toSlimDX(col0) };
 
                         vertexStream->Write(p0);
 
@@ -262,10 +354,10 @@ namespace abcr
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[uvInds[t[1]]];
                         const C4f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col4Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y),
-                                                            SlimDX::Vector4(col1.r, col1.g, col1.b, col1.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p1 = { toSlimDX(v1) ,
+                                                              toSlimDX(n1) ,
+                                                              toSlimDX(uv1),
+                                                              toSlimDX(col1) };
 
                         vertexStream->Write(p1);
 
@@ -273,10 +365,10 @@ namespace abcr
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[uvInds[t[2]]];
                         const C4f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col4Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y),
-                                                            SlimDX::Vector4(col2.r, col2.g, col2.b, col2.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p2 = { toSlimDX(v2) ,
+                                                              toSlimDX(n2) ,
+                                                              toSlimDX(uv2),
+                                                              toSlimDX(col2) };
 
                         vertexStream->Write(p2);
                     }
@@ -290,27 +382,27 @@ namespace abcr
                         const V3f& v0 = points[indices[t[0]]];
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[uvInds[t[0]]];
-                        const Pos3Norm3Tex2Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y) };
+                        const Pos3Norm3Tex2Vertex& p0 = { toSlimDX(v0) ,
+                                                          toSlimDX(n0) ,
+                                                          toSlimDX(uv0) };
 
                         vertexStream->Write(p0);
 
                         const V3f& v1 = points[indices[t[1]]];
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[uvInds[t[1]]];
-                        const Pos3Norm3Tex2Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y) };
+                        const Pos3Norm3Tex2Vertex& p1 = { toSlimDX(v1) ,
+                                                          toSlimDX(n1) ,
+                                                          toSlimDX(uv1) };
 
                         vertexStream->Write(p1);
 
                         const V3f& v2 = points[indices[t[2]]];
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[uvInds[t[2]]];
-                        const Pos3Norm3Tex2Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y) };
+                        const Pos3Norm3Tex2Vertex& p2 = { toSlimDX(v2) ,
+                                                          toSlimDX(n2) ,
+                                                          toSlimDX(uv2) };
 
                         vertexStream->Write(p2);
                     }
@@ -331,10 +423,10 @@ namespace abcr
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[t[0]];
                         const C3f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col3Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y),
-                                                            SlimDX::Vector3(col0.x, col0.y, col0.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p0 = { toSlimDX(v0) ,
+                                                              toSlimDX(n0) ,
+                                                              toSlimDX(uv0),
+                                                              toSlimDX(col0)};
 
                         vertexStream->Write(p0);
 
@@ -342,10 +434,10 @@ namespace abcr
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[t[1]];
                         const C3f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col3Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y),
-                                                            SlimDX::Vector3(col1.x, col1.y, col1.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p1 = { toSlimDX(v1) ,
+                                                              toSlimDX(n1) ,
+                                                              toSlimDX(uv1),
+                                                              toSlimDX(col1) };
 
                         vertexStream->Write(p1);
 
@@ -353,10 +445,10 @@ namespace abcr
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[t[2]];
                         const C3f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col3Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y),
-                                                            SlimDX::Vector3(col2.x, col2.y, col2.z) };
+                        const Pos3Norm3Tex2Col3Vertex& p2 = { toSlimDX(v2) ,
+                                                              toSlimDX(n2) ,
+                                                              toSlimDX(uv2),
+                                                              toSlimDX(col2) };
 
                         vertexStream->Write(p2);
                     }
@@ -374,10 +466,10 @@ namespace abcr
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[t[0]];
                         const C4f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col4Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y),
-                                                            SlimDX::Vector4(col0.r, col0.g, col0.b, col0.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p0 = { toSlimDX(v0) ,
+                                                              toSlimDX(n0) ,
+                                                              toSlimDX(uv0),
+                                                              toSlimDX(col0) };
 
                         vertexStream->Write(p0);
 
@@ -385,10 +477,10 @@ namespace abcr
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[t[1]];
                         const C4f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col4Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y),
-                                                            SlimDX::Vector4(col1.r, col1.g, col1.b, col1.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p1 = { toSlimDX(v1) ,
+                                                              toSlimDX(n1) ,
+                                                              toSlimDX(uv1),
+                                                              toSlimDX(col1) };
 
                         vertexStream->Write(p1);
 
@@ -396,10 +488,10 @@ namespace abcr
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[t[2]];
                         const C4f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col4Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y),
-                                                            SlimDX::Vector4(col2.r, col2.g, col2.b, col2.a) };
+                        const Pos3Norm3Tex2Col4Vertex& p2 = { toSlimDX(v2) ,
+                                                              toSlimDX(n2) ,
+                                                              toSlimDX(uv2),
+                                                              toSlimDX(col2) };
 
                         vertexStream->Write(p2);
                     }
@@ -413,27 +505,27 @@ namespace abcr
                         const V3f& v0 = points[indices[t[0]]];
                         const N3f& n0 = norms[t[0]];
                         const V2f& uv0 = uvs[t[0]];
-                        const Pos3Norm3Tex2Vertex& p0 = { SlimDX::Vector3(v0.x, v0.y, v0.z) ,
-                                                            SlimDX::Vector3(n0.x, n0.y, n0.z) ,
-                                                            SlimDX::Vector2(uv0.x, uv0.y) };
+                        const Pos3Norm3Tex2Vertex& p0 = { toSlimDX(v0) ,
+                                                          toSlimDX(n0) ,
+                                                          toSlimDX(uv0) };
 
                         vertexStream->Write(p0);
 
                         const V3f& v1 = points[indices[t[1]]];
                         const N3f& n1 = norms[t[1]];
                         const V2f& uv1 = uvs[t[1]];
-                        const Pos3Norm3Tex2Vertex& p1 = { SlimDX::Vector3(v1.x, v1.y, v1.z) ,
-                                                            SlimDX::Vector3(n1.x, n1.y, n1.z) ,
-                                                            SlimDX::Vector2(uv1.x, uv1.y) };
+                        const Pos3Norm3Tex2Vertex& p1 = { toSlimDX(v1) ,
+                                                          toSlimDX(n1) ,
+                                                          toSlimDX(uv1) };
 
                         vertexStream->Write(p1);
 
                         const V3f& v2 = points[indices[t[2]]];
                         const N3f& n2 = norms[t[2]];
                         const V2f& uv2 = uvs[t[2]];
-                        const Pos3Norm3Tex2Vertex& p2 = { SlimDX::Vector3(v2.x, v2.y, v2.z) ,
-                                                            SlimDX::Vector3(n2.x, n2.y, n2.z) ,
-                                                            SlimDX::Vector2(uv2.x, uv2.y) };
+                        const Pos3Norm3Tex2Vertex& p2 = { toSlimDX(v2) ,
+                                                          toSlimDX(n2) ,
+                                                          toSlimDX(uv2) };
 
                         vertexStream->Write(p2);
                     }
@@ -443,7 +535,7 @@ namespace abcr
         }
 
         {
-            auto vertexBuffer = gcnew DX11Buffer(context->Device, vertexStream,
+            auto vertexBuffer = gcnew DX11Buffer(m_context->Device, vertexStream,
                 (int)vertexStream->Length,
                 ResourceUsage::Default,
                 BindFlags::VertexBuffer,
@@ -452,14 +544,43 @@ namespace abcr
                 (int)vertexSize
             );
 
-            geom->Topology = PrimitiveTopology::TriangleList;
-            geom->HasBoundingBox = false;
-            geom->VerticesCount = m_triangles.size() * 3;
-            geom->InputLayout = Layout;
-            geom->VertexSize = vertexSize;
-            geom->VertexBuffer = vertexBuffer;
+            this->geom->Topology = PrimitiveTopology::TriangleList;
+            this->geom->HasBoundingBox = false;
+            this->geom->VerticesCount = m_triangles.size() * 3;
+            this->geom->InputLayout = Layout;
+            this->geom->VertexSize = vertexSize;
+            this->geom->VertexBuffer = vertexBuffer;
         }
+
+        delete vertexStream;
     }
+
+    Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context) : abcrGeom(camera, context), m_camera(camera)
+    {
+        type = CAMERA;
+        setMinMaxTime(m_camera);
+    }
+
+    void Camera::set(chrono_t time, Imath::M44f& transform)
+    {
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        
+        AbcGeom::CameraSample cam_samp;
+        AbcGeom::ICameraSchema camSchema = m_camera.getSchema();
+
+        camSchema.get(cam_samp);
+
+        float Aperture = cam_samp.getVerticalAperture();
+        float Near = cam_samp.getNearClippingPlane();
+        float Far = cam_samp.getFarClippingPlane();
+        float ForcalLength = cam_samp.getFocalLength();
+
+        float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
+
+        this->proj = VMath::PerspectiveLH(FoV, Near, Far, 1.0);
+        this->view = VMath::Inverse(toVVVV(this->transform));
+    }
+    
 }
 }
 }

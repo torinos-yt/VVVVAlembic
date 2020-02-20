@@ -197,12 +197,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="abcrGeom.h" />
-    <ClInclude Include="LayoutType.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="abcrLayout.h" />
+    <ClInclude Include="abcrUtils.h" />
     <ClInclude Include="VVVVAlembic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="abcrGeom.cpp" />
+    <ClCompile Include="abcrUtils.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="VVVVAlembic.cpp" />
   </ItemGroup>

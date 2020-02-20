@@ -37,7 +37,10 @@ namespace Geometry
             }
         };
         
-        static int VertexSize = sizeof(Pos3Norm3Tex2Col3Vertex);
+        static property int VertexSize
+        {
+            int get() { return sizeof(Pos3Norm3Tex2Col3Vertex); }
+        };
 
     };
 
@@ -70,7 +73,10 @@ namespace Geometry
             }
         };
 
-        static int VertexSize = sizeof(Pos3Norm3Tex2Col4Vertex);
+        static property int VertexSize
+        {
+            int get() { return sizeof(Pos3Norm3Tex2Col4Vertex); }
+        };
 
     };
 }

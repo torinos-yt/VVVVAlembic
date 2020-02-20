@@ -6,11 +6,18 @@
 #include <Alembic\AbcGeom\IPoints.h>
 #include <Alembic\AbcGeom\ICurves.h>
 #include <Alembic\AbcGeom\IXForm.h>
+#include <Alembic\AbcGeom\ICamera.h>
 
-#include "layoutType.h"
+#include "abcrUtils.h"
+#include "abcrlayout.h"
 
 using namespace Alembic;
 using namespace Alembic::Abc;
+
+using namespace VVVV::PluginInterfaces::V1;
+using namespace VVVV::PluginInterfaces::V2;
+
+using namespace VVVV::Utils::VMath;
 
 using namespace SlimDX;
 using namespace SlimDX::Direct3D11;
@@ -32,6 +39,7 @@ namespace abcr
     class Points;
     class Curves;
     class PolyMesh;
+    class Camera;
 
     ref class VVVVAlembicReader;
 
@@ -60,6 +68,9 @@ namespace abcr
     template <>
     inline Type type2enum<PolyMesh>() { return POLYMESH; }
 
+    template <>
+    inline Type type2enum<Camera>() { return CAMERA; }
+
     class abcrGeom
     {
         friend ref class VVVVAlembicReader;
@@ -67,7 +78,7 @@ namespace abcr
     public:
 
         abcrGeom();
-        abcrGeom(IObject obj);
+        abcrGeom(IObject obj, DX11RenderContext^ context);
         virtual ~abcrGeom();
 
         virtual bool valid() const { return m_obj; };
@@ -94,7 +105,7 @@ namespace abcr
             return false;
         }
 
-        abcrGeom* newChild(const IObject& obj);
+        abcrGeom* newChild(const IObject& obj, DX11RenderContext^ context);
 
     protected:
 
@@ -102,10 +113,22 @@ namespace abcr
 
         size_t index;
 
+        chrono_t m_minTime;
+        chrono_t m_maxTime;
+
+        Imath::M44f transform;
+
+        bool constant;
+
         IObject m_obj;
         std::vector<std::unique_ptr<abcrGeom>> m_children;
+        gcroot<DX11RenderContext^> m_context;
 
-        void updateSample(const ISampleSelector& ss);
+        void updateTimeSample(chrono_t time, Imath::M44f& transform);
+        virtual void set(chrono_t time, Imath::M44f& transform) {}
+
+        template<typename T>
+        void setMinMaxTime(T& obj);
 
     private:
 
@@ -116,7 +139,17 @@ namespace abcr
     {
         public:
 
-            XForm(AbcGeom::IXform xform);
+            XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
+            ~XForm()
+            {
+                if (m_xform) m_xform.reset();
+            }
+
+            void set(chrono_t time, Imath::M44f& transform) override;
+
+        private:
+
+            AbcGeom::IXform m_xform;
 
     };
 
@@ -124,29 +157,61 @@ namespace abcr
     {
     public:
 
-        Points(AbcGeom::IPoints points);
+        gcroot<ISpread<Vector3D>^> points;
+
+        Points(AbcGeom::IPoints points, DX11RenderContext^ context);
+        ~Points() 
+        {
+            if (m_points) m_points.reset();
+            if (static_cast<ISpread<Vector3D>^>(this->points) == nullptr)
+                delete this->points;
+        }
+
+        void set(chrono_t time, Imath::M44f& transform) override;
+
+    private:
+
+        AbcGeom::IPoints m_points;
     };
 
     class Curves : public abcrGeom
     {
     public:
 
-        Curves(AbcGeom::ICurves curves);
+        gcroot<DX11VertexGeometry^> curve;
+
+        Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
+        ~Curves()
+        {
+            if (m_curves) m_curves.reset();
+            if (static_cast<DX11VertexGeometry^>(this->curve) != nullptr)
+                delete this->curve;
+        }
+
+        void set(chrono_t time, Imath::M44f& transform) override;
+
+    private:
+
+        AbcGeom::ICurves m_curves;
     };
 
     class PolyMesh : public abcrGeom
     {
     public:
 
-        PolyMesh(AbcGeom::IPolyMesh pmesh);
+        gcroot<DX11VertexGeometry^> geom;
+
+        PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context);
         ~PolyMesh()
         {
             if (m_polymesh) m_polymesh.reset();
+            if (static_cast<DX11VertexGeometry^>(this->geom) != nullptr)
+                delete this->geom;
         }
 
         const char* getTypeNmae() const { return "PolyMesh"; }
 
-        void set(DX11RenderContext^ context, DX11VertexGeometry^& geom, chrono_t time);
+        void set(chrono_t time, Imath::M44f& transform) override;
 
     private:
 
@@ -159,6 +224,29 @@ namespace abcr
         
         size_t vertexSize;
         gcroot<array<InputElement>^> Layout;
+    };
+
+    class Camera : public abcrGeom
+    {
+    public:
+        Matrix4x4 view;
+        Matrix4x4 proj;
+
+        Camera(AbcGeom::ICamera camera, DX11RenderContext^ context);
+        ~Camera()
+        {
+            if (m_camera) m_camera.reset();
+        }
+
+    protected:
+
+        void set(chrono_t time, Imath::M44f& transform) override;
+
+    private:
+
+        AbcGeom::ICamera m_camera;
+        AbcGeom::CameraSample m_sample;
+
     };
 
 }
