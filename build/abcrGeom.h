@@ -106,6 +106,7 @@ namespace abcr
         }
 
         abcrGeom* newChild(const IObject& obj, DX11RenderContext^ context);
+        void setUpNodeRecursive(IObject obj, DX11RenderContext^ context);
 
     protected:
 
@@ -129,10 +130,6 @@ namespace abcr
 
         template<typename T>
         void setMinMaxTime(T& obj);
-
-    private:
-
-        static void setUpNodeRecursive(abcrGeom* obj);
     };
 
     class XForm : public abcrGeom

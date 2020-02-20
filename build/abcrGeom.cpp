@@ -10,7 +10,10 @@ namespace abcr
 
     abcrGeom::abcrGeom() : type(UNKNOWN) {}
 
-    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context) : m_obj(obj), m_context(context), type(UNKNOWN) {}
+    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context) : m_obj(obj), m_context(context), type(UNKNOWN) 
+    {
+        this->setUpNodeRecursive(obj, context);
+    }
 
     abcrGeom::~abcrGeom()
     {
@@ -20,56 +23,49 @@ namespace abcr
             m_obj.reset();
     }
 
-    void abcrGeom::setUpNodeRecursive(abcrGeom* geom)
+    void abcrGeom::setUpNodeRecursive(IObject obj, DX11RenderContext^ context)
     {
-        if (geom == nullptr) return;
+        size_t nChildren = obj.getNumChildren();
 
-        IObject obj = geom->getIObject();
-        size_t numChild = obj.getNumChildren();
-
-        for (size_t i = 0; i < numChild; ++i)
+        for (size_t i = 0; i < nChildren; ++i)
         {
-            auto* child = geom->newChild(obj.getChild(i), geom->m_context);
-            setUpNodeRecursive(child);
-        }
-    }
+            const ObjectHeader& head = obj.getChildHeader(i);
 
-    abcrGeom* abcrGeom::newChild(const IObject& obj, DX11RenderContext^ context)
-    {
-        abcrGeom* geom = nullptr;
-        if (obj.valid())
-        {
-            const auto& meta = obj.getMetaData();
+            abcrGeom* geom;
 
-            if (AbcGeom::IXformSchema::matches(meta))
+            if (AbcGeom::IXform::matches(head))
             {
-                AbcGeom::IXform xform(obj, obj.getName());
+                AbcGeom::IXform xform(obj, head.getName());
                 geom = new abcr::XForm(xform, context);
             }
-            else if (AbcGeom::IPointsSchema::matches(meta))
+            else if (AbcGeom::IPoints::matches(head))
             {
-                AbcGeom::IPoints points(obj, obj.getName());
+                AbcGeom::IPoints points(obj, head.getName());
                 geom = new abcr::Points(points, context);
             }
-            else if (AbcGeom::ICurvesSchema::matches(meta))
+            else if (AbcGeom::ICurves::matches(head))
             {
-                AbcGeom::ICurves curves(obj, obj.getName());
+                AbcGeom::ICurves curves(obj, head.getName());
                 geom = new abcr::Curves(curves, context);
             }
-            else if (AbcGeom::IPolyMeshSchema::matches(meta))
+            else if (AbcGeom::IPolyMesh::matches(head))
             {
-                AbcGeom::IPolyMesh pmesh(obj, obj.getName());
+                AbcGeom::IPolyMesh pmesh(obj, head.getName());
                 geom = new abcr::PolyMesh(pmesh, context);
+            }
+            else if (AbcGeom::ICamera::matches(head))
+            {
+                AbcGeom::ICamera camera(obj, head.getName());
+                geom = new abcr::Camera(camera, context);
             }
             else
             {
-                geom = new abcrGeom();
+                geom = new abcrGeom(obj, context);
             }
 
-            if (geom) m_children.emplace_back(geom);
-            
+            if (geom) this->m_children.emplace_back(geom);
+
         }
-        return geom;
     }
 
     template<typename T>
@@ -102,12 +98,20 @@ namespace abcr
         }
     }
 
+    //TODO
     XForm::XForm(AbcGeom::IXform xform, DX11RenderContext^ context) : abcrGeom(xform, context), m_xform(xform)
     {
         type = XFORM;
         setMinMaxTime(m_xform);
     }
 
+    //TODO
+    void XForm::set(chrono_t time, Imath::M44f& transform)
+    {
+
+    }
+
+    //TODO
     Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context) : abcrGeom(points, context), m_points(points)
     {
         type = POINTS;
@@ -126,9 +130,6 @@ namespace abcr
 
         ISampleSelector ss(time, ISampleSelector::kNearIndex);
 
-        AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
-        AbcGeom::IPointsSchema::Sample pts_sample;
-
         ptSchema.get(pts_sample, ss);
 
         P3fArraySamplePtr m_positions = pts_sample.getPositions();
@@ -145,10 +146,17 @@ namespace abcr
         }
     }
 
+    //TODO
     Curves::Curves(AbcGeom::ICurves curves, DX11RenderContext^ context) : abcrGeom(curves, context), m_curves(curves)
     {
         type = CURVES;
         setMinMaxTime(m_curves);
+    }
+
+    //TODO
+    void Curves::set(chrono_t time, Imath::M44f& transform)
+    {
+
     }
 
     PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context) : abcrGeom(pmesh, context), m_polymesh(pmesh)
@@ -195,13 +203,11 @@ namespace abcr
     {
         if (static_cast<DX11VertexGeometry^>(this->geom) == nullptr)
         {
-            this->geom = gcnew DX11VertexGeometry();
+            this->geom = gcnew DX11VertexGeometry(this->m_context);
         }
 
         AbcGeom::IPolyMeshSchema mesh = m_polymesh.getSchema();
         AbcGeom::IPolyMeshSchema::Sample mesh_samp;
-
-        if (mesh.isConstant()) return;
 
         ISampleSelector ss(time, ISampleSelector::kNearIndex);
         
@@ -555,6 +561,7 @@ namespace abcr
         delete vertexStream;
     }
 
+    //TODO
     Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context) : abcrGeom(camera, context), m_camera(camera)
     {
         type = CAMERA;
