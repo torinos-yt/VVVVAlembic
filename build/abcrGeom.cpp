@@ -10,7 +10,8 @@ namespace abcr
 
     abcrGeom::abcrGeom() : type(UNKNOWN) {}
 
-    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context) : m_obj(obj), m_context(context), type(UNKNOWN) 
+    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context)
+        : m_obj(obj), m_context(context), type(UNKNOWN), constant(false)
     {
         this->setUpNodeRecursive(obj, context);
     }
@@ -81,9 +82,7 @@ namespace abcr
                 m_minTime = tptr->getSampleTime(0);
                 m_maxTime = tptr->getSampleTime(nSamples - 1);
             }
-        }
-
-        
+        }    
     }
 
     void abcrGeom::updateTimeSample(chrono_t time, Imath::M44f& transform)
@@ -98,32 +97,52 @@ namespace abcr
         }
     }
 
-    //TODO
     XForm::XForm(AbcGeom::IXform xform, DX11RenderContext^ context) : abcrGeom(xform, context), m_xform(xform)
     {
         type = XFORM;
         setMinMaxTime(m_xform);
+
+        if (m_xform.getSchema().isConstant())
+        {
+            this->set(m_minTime, this->transform);
+            this->constant = true;
+        }
     }
 
-    //TODO
     void XForm::set(chrono_t time, Imath::M44f& transform)
     {
+        if (this->constant || time < this->m_minTime || time > m_maxTime)
+        {
+            transform = this->mat * transform;
+            return;
+        }
 
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+
+        const Imath::M44d& m = m_xform.getSchema().getValue(ss).getMatrix();
+        const double* src = m.getValue();
+        float* dst = this->mat.getValue();
+
+        for (size_t i = 0; i < 16; ++i) dst[i] = src[i];
+
+        transform = this->mat * transform;
     }
 
-    //TODO
     Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context) : abcrGeom(points, context), m_points(points)
     {
         type = POINTS;
         setMinMaxTime(m_points);
+
+        if (m_points.getSchema().isConstant())
+        {
+            this->set(m_minTime, this->transform);
+            this->constant = true;
+        }
     }
 
     void Points::set(chrono_t time, Imath::M44f& transform)
     {
-        if (static_cast<ISpread<Vector3D>^>(this->points) == nullptr)
-        {
-            points = gcnew Spread<Vector3D>();
-        }
+        if (this->constant) return;
 
         AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
         AbcGeom::IPointsSchema::Sample pts_sample;
@@ -135,9 +154,17 @@ namespace abcr
         P3fArraySamplePtr m_positions = pts_sample.getPositions();
 
         size_t nPts = m_positions->size();
-        const V3f* src = m_positions->get();
 
-        this->points->SliceCount = nPts;
+        if (static_cast<ISpread<Vector3D>^>(this->points) == nullptr)
+        {
+            points = gcnew Spread<Vector3D>(nPts);
+        }
+        else
+        {
+            this->points->SliceCount = nPts;
+        }
+
+        const V3f* src = m_positions->get();
         
         for (size_t i = 0; i < nPts; i++)
         {
@@ -146,16 +173,62 @@ namespace abcr
         }
     }
 
-    //TODO
     Curves::Curves(AbcGeom::ICurves curves, DX11RenderContext^ context) : abcrGeom(curves, context), m_curves(curves)
     {
         type = CURVES;
         setMinMaxTime(m_curves);
+
+        if (m_curves.getSchema().isConstant())
+        {
+            this->set(m_minTime, this->transform);
+            this->constant = true;
+        }
     }
 
-    //TODO
     void Curves::set(chrono_t time, Imath::M44f& transform)
     {
+        if (this->constant) return;
+
+        AbcGeom::ICurvesSchema curvSchema = m_curves.getSchema();
+        AbcGeom::ICurvesSchema::Sample curve_sample;
+
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+
+        curvSchema.get(curve_sample, ss);
+
+        P3fArraySamplePtr m_positions = curve_sample.getPositions();
+
+        size_t nCurves = curve_sample.getNumCurves();
+        const V3f* src = m_positions->get();
+
+        
+        if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) == nullptr)
+        {
+            curves = gcnew Spread<ISpread<Vector3D>^>(nCurves);
+        }
+        else
+        {
+            this->curves->SliceCount = nCurves;
+        }
+
+        const Alembic::Util::int32_t* nVertices = curve_sample.getCurvesNumVertices()->get();
+
+        for (int i = 0; i < nCurves; ++i)
+        {
+            const int num = nVertices[i];
+            ISpread<Vector3D>^ cp = gcnew Spread<Vector3D>(num);
+
+            for (int j = 0; j < num; ++j)
+            {
+                const V3f& v = *src;
+                cp[j] = toVVVV(v);
+                src++;
+            }
+
+            static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves)[i] = cp;
+
+        }
+
 
     }
 
@@ -166,7 +239,7 @@ namespace abcr
         hasRGBA = false;
         setMinMaxTime(m_polymesh);
 
-        auto geomParam = pmesh.getSchema().getArbGeomParams();
+        auto geomParam = m_polymesh.getSchema().getArbGeomParams();
         size_t nParam = geomParam.getNumProperties();
         for (size_t i = 0; i < nParam; ++i)
         {
@@ -193,14 +266,17 @@ namespace abcr
             Layout = Pos3Norm3Tex2Vertex::Layout;
         }
 
-        if (pmesh.getSchema().isConstant()) 
+        if (m_polymesh.getSchema().isConstant()) 
         {
             this->set(m_minTime, this->transform);
+            this->constant = true;
         }
     }
 
     void PolyMesh::set(chrono_t time, Imath::M44f& transform)
     {
+        if (this->constant) return;
+
         if (static_cast<DX11VertexGeometry^>(this->geom) == nullptr)
         {
             this->geom = gcnew DX11VertexGeometry(this->m_context);
@@ -561,15 +637,22 @@ namespace abcr
         delete vertexStream;
     }
 
-    //TODO
     Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context) : abcrGeom(camera, context), m_camera(camera)
     {
         type = CAMERA;
         setMinMaxTime(m_camera);
+
+        if (camera.getSchema().isConstant())
+        {
+            this->set(m_minTime, this->transform);
+            this->constant = true;
+        }
     }
 
     void Camera::set(chrono_t time, Imath::M44f& transform)
     {
+        if (this->constant) return;
+
         ISampleSelector ss(time, ISampleSelector::kNearIndex);
         
         AbcGeom::CameraSample cam_samp;

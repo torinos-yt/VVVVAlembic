@@ -16,26 +16,14 @@ namespace Geometry
         Vector2 TexCoords;
         Vector3 Colors;
 
-        static property cli::array<InputElement>^ Layout
-        {
-            cli::array<InputElement>^ get() {
-                if (Layout == nullptr)
-                {
-                    Layout = gcnew array<InputElement>
+        static cli::array<InputElement>^ Layout = 
                     {
                         InputElement("POSITION", 0, SlimDX::DXGI::Format::R32G32B32_Float, 0, 0),
                         InputElement("NORMAL", 0, SlimDX::DXGI::Format::R32G32B32_Float, 12, 0),
                         InputElement("TEXCOORD", 0, SlimDX::DXGI::Format::R32G32_Float, 24, 0),
                         InputElement("COLOR", 0, SlimDX::DXGI::Format::R32G32B32_Float, 32, 0),
                     };
-                }
-                return Layout;
-            }
-            void set(cli::array<InputElement>^ l)
-            {
 
-            }
-        };
         
         static property int VertexSize
         {
@@ -52,26 +40,13 @@ namespace Geometry
         Vector2 TexCoords;
         Vector4 Colors;
 
-        static property cli::array<InputElement>^ Layout
-        {
-            cli::array<InputElement>^ get() {
-                if (Layout == nullptr)
-                {
-                    Layout = gcnew array<InputElement>
+        static cli::array<InputElement>^ Layout = 
                     {
                         InputElement("POSITION", 0, SlimDX::DXGI::Format::R32G32B32_Float, 0, 0),
                         InputElement("NORMAL", 0, SlimDX::DXGI::Format::R32G32B32_Float, 12, 0),
                         InputElement("TEXCOORD", 0, SlimDX::DXGI::Format::R32G32_Float, 24, 0),
                         InputElement("COLOR", 0, SlimDX::DXGI::Format::R32G32B32A32_Float, 32, 0),
                     };
-                }
-                return Layout;
-            }
-            void set(cli::array<InputElement>^ l)
-            {
-
-            }
-        };
 
         static property int VertexSize
         {

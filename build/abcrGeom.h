@@ -1,5 +1,6 @@
 #pragma once
 #include <gcroot.h>
+#include <numeric>
 
 #include <Alembic\Abc\All.h>
 #include <Alembic\AbcGeom\IPolyMesh.h>
@@ -105,7 +106,6 @@ namespace abcr
             return false;
         }
 
-        abcrGeom* newChild(const IObject& obj, DX11RenderContext^ context);
         void setUpNodeRecursive(IObject obj, DX11RenderContext^ context);
 
     protected:
@@ -125,7 +125,7 @@ namespace abcr
         std::vector<std::unique_ptr<abcrGeom>> m_children;
         gcroot<DX11RenderContext^> m_context;
 
-        void updateTimeSample(chrono_t time, Imath::M44f& transform);
+        virtual void updateTimeSample(chrono_t time, Imath::M44f& transform);
         virtual void set(chrono_t time, Imath::M44f& transform) {}
 
         template<typename T>
@@ -135,6 +135,8 @@ namespace abcr
     class XForm : public abcrGeom
     {
         public:
+
+            Imath::M44f mat;
 
             XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
             ~XForm()
@@ -175,14 +177,14 @@ namespace abcr
     {
     public:
 
-        gcroot<DX11VertexGeometry^> curve;
+        gcroot<ISpread<ISpread<Vector3D>^>^> curves;
 
         Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
         ~Curves()
         {
             if (m_curves) m_curves.reset();
-            if (static_cast<DX11VertexGeometry^>(this->curve) != nullptr)
-                delete this->curve;
+            if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) != nullptr)
+                delete this->curves;
         }
 
         void set(chrono_t time, Imath::M44f& transform) override;
