@@ -12,6 +12,9 @@
 #include "abcrUtils.h"
 #include "abcrlayout.h"
 
+#include <msclr\marshal_cppstd.h>
+using namespace msclr::interop;
+
 using namespace Alembic;
 using namespace Alembic::Abc;
 
@@ -22,6 +25,8 @@ using namespace VVVV::Utils::VMath;
 
 using namespace SlimDX;
 using namespace SlimDX::Direct3D11;
+
+using namespace System;
 
 using DX11Buffer = SlimDX::Direct3D11::Buffer;
 
@@ -79,7 +84,7 @@ namespace abcr
     public:
 
         abcrGeom();
-        abcrGeom(IObject obj, DX11RenderContext^ context);
+        abcrGeom(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names);
         virtual ~abcrGeom();
 
         virtual bool valid() const { return m_obj; };
@@ -106,7 +111,7 @@ namespace abcr
             return false;
         }
 
-        void setUpNodeRecursive(IObject obj, DX11RenderContext^ context);
+        void setUpNodeRecursive(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names);
 
     protected:
 
@@ -128,6 +133,8 @@ namespace abcr
         virtual void updateTimeSample(chrono_t time, Imath::M44f& transform);
         virtual void set(chrono_t time, Imath::M44f& transform) {}
 
+
+
         template<typename T>
         void setMinMaxTime(T& obj);
     };
@@ -138,7 +145,7 @@ namespace abcr
 
             Imath::M44f mat;
 
-            XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
+            XForm(AbcGeom::IXform xform, DX11RenderContext^ context, ISpread<String^>^& names);
             ~XForm()
             {
                 if (m_xform) m_xform.reset();
@@ -158,7 +165,7 @@ namespace abcr
 
         gcroot<ISpread<Vector3D>^> points;
 
-        Points(AbcGeom::IPoints points, DX11RenderContext^ context);
+        Points(AbcGeom::IPoints points, DX11RenderContext^ context, ISpread<String^>^& names);
         ~Points() 
         {
             if (m_points) m_points.reset();
@@ -179,7 +186,7 @@ namespace abcr
 
         gcroot<ISpread<ISpread<Vector3D>^>^> curves;
 
-        Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
+        Curves(AbcGeom::ICurves curves, DX11RenderContext^ context, ISpread<String^>^& names);
         ~Curves()
         {
             if (m_curves) m_curves.reset();
@@ -200,7 +207,7 @@ namespace abcr
 
         gcroot<DX11VertexGeometry^> geom;
 
-        PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context);
+        PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context, ISpread<String^>^& names);
         ~PolyMesh()
         {
             if (m_polymesh) m_polymesh.reset();
@@ -231,7 +238,7 @@ namespace abcr
         Matrix4x4 view;
         Matrix4x4 proj;
 
-        Camera(AbcGeom::ICamera camera, DX11RenderContext^ context);
+        Camera(AbcGeom::ICamera camera, DX11RenderContext^ context, ISpread<String^>^& names);
         ~Camera()
         {
             if (m_camera) m_camera.reset();
