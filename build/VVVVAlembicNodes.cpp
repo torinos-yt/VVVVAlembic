@@ -1,5 +1,5 @@
 #pragma once
-#include "VVVVAlembic.h"
+#include "VVVVAlembicNodes.h"
 
 #include <msclr\marshal_cppstd.h>
 using namespace msclr::interop;
@@ -284,6 +284,40 @@ namespace Nodes
         delete m_mesh;
         delete m_root;
         GC::SuppressFinalize(this);
+    }
+
+    void abcr::VVVVAlembicScene::Evaluate(int SpreadMax)
+    {
+        if (FFirst)
+        {
+            m_scene = gcnew abcrScene();
+            FPath->Sync();
+        }
+
+        String^ prevPath = FPath[0];
+        FPath->Sync();
+
+        if ((FPath[0] != prevPath) || FReload[0] || (FFirst && FPath[0] != "")) 
+        {
+            this->RenderRequest(this, this->FHost);
+
+            try
+            {
+                m_scene->open(FPath[0], this->AssignedContext, FNames);
+            }
+            catch(System::Exception^ e)
+            {
+                FLogger->Log(LogType::Debug, "failed : " + e->Message);
+            }
+        }
+
+        if ((FTime->IsChanged || FReload[0] || FFirst) && m_scene->valid())
+        {
+
+        }
+
+        FOutScene[0] = m_scene;
+        
     }
 
 }

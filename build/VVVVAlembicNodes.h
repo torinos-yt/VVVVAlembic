@@ -11,6 +11,7 @@
 #include <Alembic\AbcCoreOgawa\All.h>
 
 #include "abcrGeom.h"
+#include "abcrScene.h"
 
 
 using namespace System;
@@ -86,6 +87,46 @@ namespace abcr
 
         DataStream^ vertexStream;
         size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
+    };
+
+    [PluginInfo(Name = "Alembic Scene", Category = "Alembic", Tags = "")]
+    public ref class VVVVAlembicScene : public IPluginEvaluate, IDX11ResourceDataRetriever
+    {
+    public:
+
+        [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename)]
+        Pin<String^>^ FPath;
+
+        [Input("Time", IsSingle = true, DefaultValue = 0.0)]
+        IDiffSpread<float>^ FTime;
+
+        [Input("Reload", IsSingle = true, IsBang = true)]
+        ISpread<bool>^ FReload;
+
+        [Output("Scene Out")]
+        ISpread<abcrScene^>^ FOutScene;
+
+        [Output("Message")]
+        ISpread<String^>^ FNames;
+
+        [Import()]
+        ILogger^ FLogger;
+
+        [Import()]
+        IPluginHost^ FHost;
+
+        virtual property DX11RenderContext^ AssignedContext;
+
+        virtual event DX11RenderRequestDelegate^ RenderRequest;
+
+        void Evaluate(int SpreadMax) override;
+
+    private:
+
+        bool FFirst = true;
+
+        abcrScene^ m_scene;
+
     };
 
 }

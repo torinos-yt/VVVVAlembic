@@ -1,4 +1,8 @@
 #pragma once
+#include <msclr\marshal_cppstd.h>
+using namespace msclr::interop;
+
+#include <gcroot.h>
 
 #include <Alembic\Abc\All.h>
 #include <Alembic\AbcCoreOgawa\All.h>
@@ -11,6 +15,7 @@ using namespace VVVV::PluginInterfaces::V1;
 using namespace VVVV::PluginInterfaces::V2;
 
 using namespace System;
+using namespace System::Collections::Generic;
 
 namespace VVVV
 {
@@ -18,30 +23,37 @@ namespace Nodes
 {
 namespace abcr
 {
-    class abcrScene
+
+    ref class abcrScene
     {
         public:
 
             ~abcrScene();
 
-            bool open(const string& path);
+            bool open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names);
 
             void updateSample(float time);
 
-            inline float getMaxTime() const { return m_maxTime; }
+            bool valid() { return m_top->get()->valid(); };
 
-            bool getSample(const string& name);
+            inline float getMaxTime(){ return m_maxTime; }
+
+            bool getSample(const String^& name, Matrix4x4& xform);                     //XForm
+            bool getSample(const String^& name, ISpread<Vector3D>^& points);           //Points
+            bool getSample(const String^& name, ISpread<ISpread<Vector3D>^>^& curves); //Cueves
+            bool getSample(const String^& name, DX11VertexGeometry^ geom);             //PolyMesh
+            bool getSample(const String^& name, Matrix4x4& view, Matrix4x4& proj);     //Camera
 
         private:
 
-            IArchive m_archive;
-            std::unique_ptr<abcrGeom> m_top;
+            IArchive* m_archive;
+            shared_ptr<abcrGeom>* m_top;
 
             chrono_t m_minTime;
             chrono_t m_maxTime;
 
-            std::unordered_map<string, abcrGeom*> nameMap;
-            std::unordered_map<string, abcrGeom*> fullnameMap;
+            Dictionary<String^, abcrPtr>^ nameMap;
+            Dictionary<String^, abcrPtr>^ fullnameMap;
 
     };
 }

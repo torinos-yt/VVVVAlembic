@@ -27,6 +27,8 @@ using namespace SlimDX;
 using namespace SlimDX::Direct3D11;
 
 using namespace System;
+using namespace System::Collections::Generic;
+using namespace std;
 
 using DX11Buffer = SlimDX::Direct3D11::Buffer;
 
@@ -47,7 +49,9 @@ namespace abcr
     class PolyMesh;
     class Camera;
 
-    ref class VVVVAlembicReader;
+    ref class abcrScene;
+
+    value struct abcrPtr;
 
     enum Type
     {
@@ -79,12 +83,12 @@ namespace abcr
 
     class abcrGeom
     {
-        friend ref class VVVVAlembicReader;
+        friend ref class abcrScene;
 
     public:
 
         abcrGeom();
-        abcrGeom(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names);
+        abcrGeom(IObject obj, DX11RenderContext^ context);
         virtual ~abcrGeom();
 
         virtual bool valid() const { return m_obj; };
@@ -107,11 +111,11 @@ namespace abcr
         template <typename T>
         inline bool get(T& out)
         {
-            FLogger->Log(LogType::Debug, "invalid type");
             return false;
         }
 
-        void setUpNodeRecursive(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names);
+        void setUpNodeRecursive(IObject obj, DX11RenderContext^ context);
+        static void setUpDocRecursive(shared_ptr<abcrGeom>& obj, Dictionary<String^, abcrPtr>^% nameMap, Dictionary<String^, abcrPtr>^% fullnameMap);
 
     protected:
 
@@ -127,13 +131,11 @@ namespace abcr
         bool constant;
 
         IObject m_obj;
-        std::vector<std::unique_ptr<abcrGeom>> m_children;
+        vector<shared_ptr<abcrGeom>> m_children;
         gcroot<DX11RenderContext^> m_context;
 
         virtual void updateTimeSample(chrono_t time, Imath::M44f& transform);
-        virtual void set(chrono_t time, Imath::M44f& transform) {}
-
-
+        virtual void set(chrono_t time, Imath::M44f& transform) {};
 
         template<typename T>
         void setMinMaxTime(T& obj);
@@ -145,7 +147,7 @@ namespace abcr
 
             Imath::M44f mat;
 
-            XForm(AbcGeom::IXform xform, DX11RenderContext^ context, ISpread<String^>^& names);
+            XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
             ~XForm()
             {
                 if (m_xform) m_xform.reset();
@@ -165,7 +167,7 @@ namespace abcr
 
         gcroot<ISpread<Vector3D>^> points;
 
-        Points(AbcGeom::IPoints points, DX11RenderContext^ context, ISpread<String^>^& names);
+        Points(AbcGeom::IPoints points, DX11RenderContext^ context);
         ~Points() 
         {
             if (m_points) m_points.reset();
@@ -186,7 +188,7 @@ namespace abcr
 
         gcroot<ISpread<ISpread<Vector3D>^>^> curves;
 
-        Curves(AbcGeom::ICurves curves, DX11RenderContext^ context, ISpread<String^>^& names);
+        Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
         ~Curves()
         {
             if (m_curves) m_curves.reset();
@@ -207,7 +209,7 @@ namespace abcr
 
         gcroot<DX11VertexGeometry^> geom;
 
-        PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context, ISpread<String^>^& names);
+        PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context);
         ~PolyMesh()
         {
             if (m_polymesh) m_polymesh.reset();
@@ -229,7 +231,7 @@ namespace abcr
         AbcGeom::IC4fGeomParam m_rgba;
         
         size_t vertexSize;
-        gcroot<array<InputElement>^> Layout;
+        gcroot<cli::array<InputElement>^> Layout;
     };
 
     class Camera : public abcrGeom
@@ -238,7 +240,7 @@ namespace abcr
         Matrix4x4 view;
         Matrix4x4 proj;
 
-        Camera(AbcGeom::ICamera camera, DX11RenderContext^ context, ISpread<String^>^& names);
+        Camera(AbcGeom::ICamera camera, DX11RenderContext^ context);
         ~Camera()
         {
             if (m_camera) m_camera.reset();
@@ -253,6 +255,13 @@ namespace abcr
         AbcGeom::ICamera m_camera;
         AbcGeom::CameraSample m_sample;
 
+    };
+
+    value struct abcrPtr
+    {
+        abcrGeom* m_ptr;
+
+        abcrPtr(abcrGeom* ptr) : m_ptr(ptr) {}
     };
 
 }

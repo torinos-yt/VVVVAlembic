@@ -11,9 +11,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="VVVVAlembic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="abcrGeom.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -26,11 +23,11 @@
     <ClInclude Include="abcrScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VVVVAlembicNodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="VVVVAlembic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AssemblyInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -41,6 +38,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="abcrScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VVVVAlembicNodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

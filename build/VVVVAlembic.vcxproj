@@ -200,14 +200,14 @@
     <ClInclude Include="abcrLayout.h" />
     <ClInclude Include="abcrScene.h" />
     <ClInclude Include="abcrUtils.h" />
-    <ClInclude Include="VVVVAlembic.h" />
+    <ClInclude Include="VVVVAlembicNodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="abcrGeom.cpp" />
     <ClCompile Include="abcrScene.cpp" />
     <ClCompile Include="abcrUtils.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="VVVVAlembic.cpp" />
+    <ClCompile Include="VVVVAlembicNodes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

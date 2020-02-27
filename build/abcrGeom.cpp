@@ -10,11 +10,10 @@ namespace abcr
 
     abcrGeom::abcrGeom() : type(UNKNOWN) {}
 
-    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names)
+    abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context)
         : m_obj(obj), m_context(context), type(UNKNOWN), constant(false)
     {
-        SpreadExtensions::Add(names, marshal_as<String^>(obj.getFullName()));
-        this->setUpNodeRecursive(obj, context , names);
+        this->setUpNodeRecursive(obj, context);
     }
 
     abcrGeom::~abcrGeom()
@@ -24,7 +23,7 @@ namespace abcr
         if (m_obj) m_obj.reset();
     }
 
-    void abcrGeom::setUpNodeRecursive(IObject obj, DX11RenderContext^ context, ISpread<String^>^& names)
+    void abcrGeom::setUpNodeRecursive(IObject obj, DX11RenderContext^ context)
     {
         size_t nChildren = obj.getNumChildren();
 
@@ -32,42 +31,61 @@ namespace abcr
         {
             const ObjectHeader& head = obj.getChildHeader(i);
 
-            abcrGeom* geom;
+            shared_ptr<abcrGeom> geom;
 
             if (AbcGeom::IXform::matches(head))
             {
                 AbcGeom::IXform xform(obj, head.getName());
-                geom = new abcr::XForm(xform, context, names);
+                geom.reset( new abcr::XForm(xform, context));
             }
             else if (AbcGeom::IPoints::matches(head))
             {
                 AbcGeom::IPoints points(obj, head.getName());
-                geom = new abcr::Points(points, context, names);
+                geom.reset( new abcr::Points(points, context));
             }
             else if (AbcGeom::ICurves::matches(head))
             {
                 AbcGeom::ICurves curves(obj, head.getName());
-                geom = new abcr::Curves(curves, context, names);
+                geom.reset( new abcr::Curves(curves, context));
             }
             else if (AbcGeom::IPolyMesh::matches(head))
             {
                 AbcGeom::IPolyMesh pmesh(obj, head.getName());
-                geom = new abcr::PolyMesh(pmesh, context, names);
+                geom.reset( new abcr::PolyMesh(pmesh, context));
             }
             else if (AbcGeom::ICamera::matches(head))
             {
                 AbcGeom::ICamera camera(obj, head.getName());
-                geom = new abcr::Camera(camera, context, names);
+                geom.reset( new abcr::Camera(camera, context));
             }
             else
             {
-                geom = new abcrGeom(obj, context, names);
+                geom.reset( new abcrGeom(obj, context));
             }
 
-            if (geom) this->m_children.emplace_back(geom);
+            if (geom && geom->valid())
+            {
+                geom->index = m_children.size();
+                this->m_children.emplace_back(geom);
+                this->m_minTime = min(this->m_minTime, geom->m_minTime);
+                this->m_maxTime = min(this->m_maxTime, geom->m_maxTime);
+            }
 
         }
     }
+
+    void abcrGeom::setUpDocRecursive(shared_ptr<abcrGeom>& obj, Dictionary<String^, abcrPtr>^% nameMap, Dictionary<String^, abcrPtr>^% fullnameMap)
+    {
+        if (!obj->isTypeOf(UNKNOWN))
+        {
+            nameMap[marshal_as<String^>(obj->getName())] = abcrPtr(obj.get());
+            fullnameMap[marshal_as<String^>(obj->getFullName())] = abcrPtr(obj.get());
+        }
+
+        for (size_t i = 0; i < obj->m_children.size(); i++)
+            setUpDocRecursive(obj->m_children[i], nameMap, fullnameMap);
+    }
+
 
     template<typename T>
     void abcrGeom::setMinMaxTime(T& obj)
@@ -97,8 +115,8 @@ namespace abcr
         }
     }
 
-    XForm::XForm(AbcGeom::IXform xform, DX11RenderContext^ context, ISpread<String^>^& names)
-        : abcrGeom(xform, context, names), m_xform(xform)
+    XForm::XForm(AbcGeom::IXform xform, DX11RenderContext^ context)
+        : abcrGeom(xform, context), m_xform(xform)
     {
         type = XFORM;
         setMinMaxTime(m_xform);
@@ -129,8 +147,8 @@ namespace abcr
         transform = this->mat * transform;
     }
 
-    Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context, ISpread<String^>^& names)
-        : abcrGeom(points, context, names), m_points(points)
+    Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context)
+        : abcrGeom(points, context), m_points(points)
     {
         type = POINTS;
         setMinMaxTime(m_points);
@@ -175,8 +193,8 @@ namespace abcr
         }
     }
 
-    Curves::Curves(AbcGeom::ICurves curves, DX11RenderContext^ context, ISpread<String^>^& names)
-        : abcrGeom(curves, context, names), m_curves(curves)
+    Curves::Curves(AbcGeom::ICurves curves, DX11RenderContext^ context)
+        : abcrGeom(curves, context), m_curves(curves)
     {
         type = CURVES;
         setMinMaxTime(m_curves);
@@ -229,14 +247,11 @@ namespace abcr
             }
 
             static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves)[i] = cp;
-
         }
-
-
     }
 
-    PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context, ISpread<String^>^& names)
-        : abcrGeom(pmesh, context, names), m_polymesh(pmesh)
+    PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context)
+        : abcrGeom(pmesh, context), m_polymesh(pmesh)
     {
         type = POLYMESH;
         hasRGB = false;
@@ -641,8 +656,8 @@ namespace abcr
         delete vertexStream;
     }
 
-    Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context, ISpread<String^>^& names)
-        : abcrGeom(camera, context, names), m_camera(camera)
+    Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context)
+        : abcrGeom(camera, context), m_camera(camera)
     {
         type = CAMERA;
         setMinMaxTime(m_camera);
