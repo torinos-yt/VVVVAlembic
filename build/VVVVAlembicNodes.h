@@ -72,9 +72,9 @@ namespace abcr
         [Import()]
         ILogger^ FLogger;
 
-        void Evaluate(int SpreadMax) override;
-        void Update(DX11RenderContext^ context) override;
-        void Destroy(DX11RenderContext^ context, bool force) override;
+        virtual void Evaluate(int SpreadMax) override;
+        virtual void Update(DX11RenderContext^ context) override;
+        virtual void Destroy(DX11RenderContext^ context, bool force) override;
 
     private:
 

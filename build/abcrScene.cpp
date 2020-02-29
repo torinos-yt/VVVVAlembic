@@ -15,7 +15,11 @@ namespace abcr
 
     abcrScene::~abcrScene() 
     {
+        nameMap->Clear();
+        fullnameMap->Clear();
 
+        if (m_top) m_top->reset();
+        if (m_archive->valid) m_archive->reset();
     }
 
     bool abcrScene::open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names)
