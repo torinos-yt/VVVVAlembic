@@ -299,16 +299,20 @@ namespace Nodes
             this->RenderRequest(this, this->FHost);
 
             FOutScene->SliceCount = 1;
-            FOutScene[0] = gcnew abcrScene();
+            if (FOutScene[0].m_Scene) delete FOutScene[0].m_Scene;
+
+            AbcScene s;
+            s.m_Scene = new abcrScene();
+            FOutScene[0] = s;
 
             try
             {
-                if (FOutScene[0]->open(FPath[0], this->AssignedContext, FNames))
+                if (FOutScene[0].m_Scene->open(FPath[0], this->AssignedContext, FNames))
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
 
                     FDulation->SliceCount = 1;
-                    FDulation[0] = FOutScene[0]->getMaxTime();
+                    FDulation[0] = FOutScene[0].m_Scene->getMaxTime();
                 }
                 else
                 {
@@ -326,7 +330,7 @@ namespace Nodes
         }
         else if (SpreadMax == 0 || FPath->SliceCount == 0 || FPath[0] == "")
         {
-            if (FOutScene[0]->valid()) delete FOutScene[0];
+            if (FOutScene[0].m_Scene->valid()) delete FOutScene[0].m_Scene;
 
             FOutScene->SliceCount = 0;
             FDulation->SliceCount = 0;
@@ -336,9 +340,9 @@ namespace Nodes
         }
 
         //update
-        if ((FTime->IsChanged || FReload[0] || FFirst) && FOutScene[0]->valid())
+        if ((FTime->IsChanged || FReload[0] || FFirst) && FOutScene[0].m_Scene->valid())
         {
-
+            FOutScene[0].m_Scene->updateSample( ((ISpread<float>^)FTime)[0] );
         }
 
         FFirst = false;

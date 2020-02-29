@@ -89,6 +89,11 @@ namespace abcr
         size_t vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
     };
 
+    value struct AbcScene
+    {
+        abcrScene* m_Scene;
+    };
+
     [PluginInfo(Name = "Alembic Scene", Category = "Alembic", Tags = "")]
     public ref class VVVVAlembicScene : public IPluginEvaluate, IDX11ResourceDataRetriever
     {
@@ -104,7 +109,7 @@ namespace abcr
         ISpread<bool>^ FReload;
 
         [Output("Scene Out")]
-        ISpread<abcrScene^>^ FOutScene;
+        ISpread<AbcScene>^ FOutScene;
 
         [Output("End Time")]
         ISpread<float>^ FDulation;

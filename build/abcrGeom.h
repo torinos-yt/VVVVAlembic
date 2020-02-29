@@ -49,7 +49,7 @@ namespace abcr
     class PolyMesh;
     class Camera;
 
-    ref class abcrScene;
+    class abcrScene;
 
     value struct abcrPtr;
 
@@ -83,7 +83,7 @@ namespace abcr
 
     class abcrGeom
     {
-        friend ref class abcrScene;
+        friend class abcrScene;
 
     public:
 

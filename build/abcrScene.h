@@ -24,7 +24,7 @@ namespace Nodes
 namespace abcr
 {
 
-    ref class abcrScene
+    class abcrScene
     {
         public:
 
@@ -35,7 +35,7 @@ namespace abcr
 
             void updateSample(float time);
 
-            bool valid() { return this->isValid; };
+            bool valid() { return m_top->valid(); };
 
             inline float getMaxTime(){ return m_maxTime; }
 
@@ -47,16 +47,14 @@ namespace abcr
 
         private:
 
-            IArchive* m_archive;
-            shared_ptr<abcrGeom>* m_top;
+            IArchive m_archive;
+            shared_ptr<abcrGeom> m_top;
 
             chrono_t m_minTime;
             chrono_t m_maxTime;
 
-            Dictionary<String^, abcrPtr>^ nameMap;
-            Dictionary<String^, abcrPtr>^ fullnameMap;
-
-            bool isValid;
+            gcroot<Dictionary<String^, abcrPtr>^> nameMap;
+            gcroot<Dictionary<String^, abcrPtr>^> fullnameMap;
 
     };
 }
