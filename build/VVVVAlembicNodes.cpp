@@ -329,6 +329,7 @@ namespace Nodes
                 FLogger->Log(LogType::Debug, "Failed Open : " + e->Message);
             }
 
+            FOutScene->Stream->IsChanged = true;
         }
         else if (SpreadMax == 0 || FPath->SliceCount == 0 || FPath[0] == "")
         {
@@ -342,9 +343,11 @@ namespace Nodes
         }
 
         //update
-        if ((FTime->IsChanged || FReload[0] || FFirst) && FOutScene[0].m_Scene->valid())
+        if (((FPath[0] != prevPath) || FTime->IsChanged || FReload[0] || FFirst) 
+            && FOutScene[0].m_Scene->valid())
         {
             FOutScene[0].m_Scene->updateSample( ((ISpread<float>^)FTime)[0] );
+            FOutScene->Stream->IsChanged = true;
         }
 
         FFirst = false;
