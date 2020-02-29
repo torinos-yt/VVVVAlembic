@@ -26,16 +26,10 @@ namespace abcr
     {
         m_archive = IArchive(AbcCoreOgawa::ReadArchive(), marshal_as<string>(path),
             Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
-        //IArchive archive = IArchive(AbcCoreOgawa::ReadArchive(), marshal_as<string>(path),
-            //Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
-        //m_archive = &archive;
 
         if (!m_archive.valid()) return false;
 
         m_top = shared_ptr<abcrGeom>(new abcrGeom(m_archive.getTop(), context));
-
-        //shared_ptr<abcrGeom> top = shared_ptr<abcrGeom>(new abcrGeom(m_archive->getTop(), context));
-        //m_top = &top;
         
         {
             nameMap->Clear();
@@ -55,6 +49,8 @@ namespace abcr
 
     void abcrScene::updateSample(float time)
     {
+        if (!m_top) return;
+
         Imath::M44f m;
         m.makeIdentity();
         m_top->updateTimeSample(time, m);

@@ -37,8 +37,8 @@ namespace abcr
 
             bool valid() { return m_top->valid(); };
 
-            inline float getMaxTime(){ return m_maxTime; }
-
+            inline float getMaxTime() { return m_maxTime; };
+            
             bool getSample(const String^& name, Matrix4x4& xform);                     //XForm
             bool getSample(const String^& name, ISpread<Vector3D>^& points);           //Points
             bool getSample(const String^& name, ISpread<ISpread<Vector3D>^>^& curves); //Cueves
