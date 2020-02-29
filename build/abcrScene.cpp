@@ -22,27 +22,22 @@ namespace abcr
         if (m_archive.valid()) m_archive.reset();
     }
 
-    bool abcrScene::open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names)
+    bool abcrScene::open(String^ path, DX11RenderContext^ context)
     {
         m_archive = IArchive(AbcCoreOgawa::ReadArchive(), marshal_as<string>(path),
             Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
 
         if (!m_archive.valid()) return false;
 
-        m_top = shared_ptr<abcrGeom>(new abcrGeom(m_archive.getTop(), context));
+        m_top.reset( new abcrGeom(m_archive.getTop(), context) );
         
-        {
-            nameMap->Clear();
-            fullnameMap->Clear();
-
-            abcrGeom::setUpDocRecursive(m_top, static_cast<Dictionary<String^, abcrPtr>^>(nameMap), static_cast<Dictionary<String^, abcrPtr>^>(fullnameMap));
-        }
+        nameMap->Clear();
+        fullnameMap->Clear();
+        abcrGeom::setUpDocRecursive(m_top, static_cast<Dictionary<String^, abcrPtr>^>(nameMap),
+                                    static_cast<Dictionary<String^, abcrPtr>^>(fullnameMap));
         
         m_minTime = m_top->m_minTime;
         m_maxTime = m_top->m_maxTime;
-        
-        names->SliceCount = 1;
-        SpreadExtensions::AssignFrom(names, fullnameMap->Keys);
 
         return true;
     }

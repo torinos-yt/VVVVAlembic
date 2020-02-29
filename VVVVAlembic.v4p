@@ -339,25 +339,27 @@
    <LINK srcnodeid="31" srcpinname="Render State" dstnodeid="11" dstpinname="Render State">
    </LINK>
    <NODE systemname="Alembic Scene (Alembic)" filename="nodes\plugins\VVVV.Alembic.dll" nodename="Alembic Scene (Alembic)" componentmode="Hidden" id="32">
-   <BOUNDS type="Node" left="1005" top="2940" width="100" height="100">
+   <BOUNDS type="Node" left="1005" top="2565" width="100" height="100">
    </BOUNDS>
-   <BOUNDS type="Box" left="1005" top="2940" width="3000" height="3000">
+   <BOUNDS type="Box" left="1005" top="2565" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Filename" visible="1">
+   <PIN pinname="Filename" visible="1" slicecount="1" values="abcFile\simMesh2.abc">
    </PIN>
-   <PIN pinname="Reload" slicecount="1" values="0">
+   <PIN pinname="Reload" slicecount="1" visible="1" values="0">
    </PIN>
    <PIN pinname="End Time" visible="1">
    </PIN>
    <PIN pinname="Message" visible="1">
    </PIN>
+   <PIN pinname="Names" visible="1">
+   </PIN>
+   <PIN pinname="Time" slicecount="1" values="0">
+   </PIN>
    </NODE>
-   <LINK srcnodeid="25" srcpinname="Output" dstnodeid="32" dstpinname="Filename">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="34" systemname="IOBox (String)">
-   <BOUNDS type="Box" left="870" top="3405" width="1650" height="435">
+   <BOUNDS type="Box" left="705" top="3285" width="1650" height="435">
    </BOUNDS>
-   <BOUNDS type="Node" left="870" top="3405" width="0" height="0">
+   <BOUNDS type="Node" left="705" top="3285" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Default" slicecount="1" values="||">
    </PIN>
@@ -367,7 +369,47 @@
    </PIN>
    <PIN pinname="Rows" slicecount="1" values="2">
    </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="Names">
+   </PIN>
+   <PIN pinname="Input String" visible="1" slicecount="2" values="/geo1,/geo1/normal1">
+   </PIN>
    </NODE>
-   <LINK srcnodeid="32" srcpinname="Message" dstnodeid="34" dstpinname="Input String">
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="35" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="735" top="4065" width="795" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="735" top="4065" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Descriptive Name" slicecount="1" values="|End Time|">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="32" srcpinname="End Time" dstnodeid="35" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="Names" dstnodeid="34" dstpinname="Input String">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="36" systemname="IOBox (Value Advanced)">
+   <BOUNDS type="Box" left="2025" top="1965" width="480" height="480">
+   </BOUNDS>
+   <BOUNDS type="Node" left="2025" top="1965" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
+   </PIN>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Boolean">
+   </PIN>
+   <PIN pinname="Behavior" slicecount="1" values="Bang">
+   </PIN>
+   <PIN pinname="X Input Value" slicecount="1" values="0">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="32" dstpinname="Reload">
+   </LINK>
+   <LINK srcnodeid="25" srcpinname="Output" dstnodeid="32" dstpinname="Filename">
    </LINK>
    </PATCH>

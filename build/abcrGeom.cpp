@@ -8,10 +8,12 @@ namespace Nodes
 namespace abcr
 {
 
-    abcrGeom::abcrGeom() : type(UNKNOWN) {}
+    abcrGeom::abcrGeom() : type(UNKNOWN), 
+                        m_minTime(std::numeric_limits<float>::infinity()), m_maxTime(0) {}
 
     abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context)
-        : m_obj(obj), m_context(context), type(UNKNOWN), constant(false)
+        : m_obj(obj), m_context(context), type(UNKNOWN), constant(false), 
+        m_minTime(std::numeric_limits<float>::infinity()), m_maxTime(0)
     {
         this->setUpNodeRecursive(m_obj, context);
     }
@@ -67,8 +69,8 @@ namespace abcr
             {
                 geom->index = m_children.size();
                 this->m_children.emplace_back(geom);
-                this->m_minTime = min(this->m_minTime, geom->m_minTime);
-                this->m_maxTime = max(this->m_maxTime, geom->m_maxTime);
+                this->m_minTime = std::min(this->m_minTime, geom->m_minTime);
+                this->m_maxTime = std::max(this->m_maxTime, geom->m_maxTime);
             }
 
         }

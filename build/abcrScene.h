@@ -31,19 +31,24 @@ namespace abcr
             abcrScene();
             ~abcrScene();
 
-            bool open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names);
+            bool open(String^ path, DX11RenderContext^ context);
 
             void updateSample(float time);
 
-            bool valid() { return m_top->valid(); };
+            bool valid() const { return m_top->valid(); };
 
-            inline float getMaxTime() { return m_maxTime; };
+            inline float getMaxTime() const { return m_maxTime; };
             
             bool getSample(const String^& name, Matrix4x4& xform);                     //XForm
             bool getSample(const String^& name, ISpread<Vector3D>^& points);           //Points
             bool getSample(const String^& name, ISpread<ISpread<Vector3D>^>^& curves); //Cueves
             bool getSample(const String^& name, DX11VertexGeometry^ geom);             //PolyMesh
             bool getSample(const String^& name, Matrix4x4& view, Matrix4x4& proj);     //Camera
+
+            void getFullNameMap(ISpread<String^>^% names)
+            {
+                SpreadExtensions::AssignFrom(names, fullnameMap->Keys);
+            }
 
         private:
 

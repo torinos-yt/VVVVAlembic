@@ -114,7 +114,7 @@ namespace abcr
         [Output("End Time")]
         ISpread<float>^ FDulation;
 
-        [Output("Message")]
+        [Output("Names")]
         ISpread<String^>^ FNames;
 
         [Import()]

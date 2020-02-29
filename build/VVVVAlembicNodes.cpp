@@ -307,12 +307,14 @@ namespace Nodes
 
             try
             {
-                if (FOutScene[0].m_Scene->open(FPath[0], this->AssignedContext, FNames))
+                if (FOutScene[0].m_Scene->open(FPath[0], this->AssignedContext))
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
 
                     FDulation->SliceCount = 1;
                     FDulation[0] = FOutScene[0].m_Scene->getMaxTime();
+
+                    FOutScene[0].m_Scene->getFullNameMap(FNames);
                 }
                 else
                 {
