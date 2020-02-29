@@ -11,6 +11,8 @@ namespace abcr
     {
         this->nameMap = gcnew Dictionary<String^, abcrPtr>();
         this->fullnameMap = gcnew Dictionary<String^, abcrPtr>();
+
+        this->isValid = false;
     }
 
     abcrScene::~abcrScene() 
@@ -19,7 +21,7 @@ namespace abcr
         fullnameMap->Clear();
 
         if (m_top) m_top->reset();
-        if (m_archive->valid) m_archive->reset();
+        if (m_archive->valid()) m_archive->reset();
     }
 
     bool abcrScene::open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names)
@@ -28,7 +30,11 @@ namespace abcr
             Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
         m_archive = &archive;
 
-        if (!m_archive->valid()) return false;
+        if (!m_archive->valid())
+        {
+            isValid = false;
+            return false;
+        }
 
         shared_ptr<abcrGeom> top = shared_ptr<abcrGeom>(new abcrGeom(m_archive->getTop(), context));
         m_top = &top;
@@ -46,6 +52,7 @@ namespace abcr
         names->SliceCount = 1;
         SpreadExtensions::AssignFrom(names, fullnameMap->Keys);
 
+        isValid = true;
         return true;
     }
 

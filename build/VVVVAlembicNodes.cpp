@@ -299,21 +299,23 @@ namespace Nodes
             this->RenderRequest(this, this->FHost);
 
             FOutScene->SliceCount = 1;
-            FDulation->SliceCount = 1;
-
             FOutScene[0] = gcnew abcrScene();
-
-            FDulation[0] = 0;
 
             try
             {
                 if (FOutScene[0]->open(FPath[0], this->AssignedContext, FNames))
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
+
+                    FDulation->SliceCount = 1;
+                    FDulation[0] = FOutScene[0]->getMaxTime();
                 }
                 else
                 {
                     FLogger->Log(LogType::Debug, "Failed Open : Illigal Format");
+                    FOutScene->SliceCount = 0;
+                    FDulation->SliceCount = 0;
+                    FNames->SliceCount = 0;
                 }
             }
             catch(System::Exception^ e)
@@ -321,19 +323,20 @@ namespace Nodes
                 FLogger->Log(LogType::Debug, "Failed Open : " + e->Message);
             }
 
-            FDulation[0] = FOutScene[0]->getMaxTime();
         }
-        else if (SpreadMax == 0)
+        else if (SpreadMax == 0 || FPath->SliceCount == 0 || FPath[0] == "")
         {
             if (FOutScene[0]->valid()) delete FOutScene[0];
 
             FOutScene->SliceCount = 0;
-            FNames->SliceCount = 0;
             FDulation->SliceCount = 0;
+            FNames->SliceCount = 0;
+
+            return;
         }
 
         //update
-        if ((FTime->IsChanged || FReload[0] || FFirst) /*&& FOutScene[0]->valid()*/)
+        if ((FTime->IsChanged || FReload[0] || FFirst) && FOutScene[0]->valid())
         {
 
         }

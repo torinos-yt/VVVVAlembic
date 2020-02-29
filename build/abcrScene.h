@@ -35,7 +35,7 @@ namespace abcr
 
             void updateSample(float time);
 
-            bool valid() { return m_top->get()->valid(); };
+            bool valid() { return this->isValid; };
 
             inline float getMaxTime(){ return m_maxTime; }
 
@@ -55,6 +55,8 @@ namespace abcr
 
             Dictionary<String^, abcrPtr>^ nameMap;
             Dictionary<String^, abcrPtr>^ fullnameMap;
+
+            bool isValid;
 
     };
 }
