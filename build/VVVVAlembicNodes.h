@@ -57,7 +57,7 @@ namespace abcr
         [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename)]
         Pin<String^>^ FPath;
 
-        [Input("Time", IsSingle = true, DefaultValue = 0.0)]
+        [Input("Time", IsSingle = true, DefaultValue = 0.0, MinValue = 0.0)]
         IDiffSpread<float>^ FTime;
 
         [Input("Reload", IsSingle = true, IsBang = true)]
@@ -97,7 +97,7 @@ namespace abcr
         [Input("Filename", IsSingle = true, AutoValidate = false, StringType = StringType::Filename)]
         Pin<String^>^ FPath;
 
-        [Input("Time", IsSingle = true, DefaultValue = 0.0)]
+        [Input("Time", IsSingle = true, DefaultValue = 0.0, MinValue = 0.0)]
         IDiffSpread<float>^ FTime;
 
         [Input("Reload", IsSingle = true, IsBang = true)]
@@ -105,6 +105,9 @@ namespace abcr
 
         [Output("Scene Out")]
         ISpread<abcrScene^>^ FOutScene;
+
+        [Output("End Time")]
+        ISpread<float>^ FDulation;
 
         [Output("Message")]
         ISpread<String^>^ FNames;
@@ -119,13 +122,11 @@ namespace abcr
 
         virtual event DX11RenderRequestDelegate^ RenderRequest;
 
-        void Evaluate(int SpreadMax) override;
+        virtual void Evaluate(int SpreadMax) override;
 
     private:
 
         bool FFirst = true;
-
-        abcrScene^ m_scene;
 
     };
 

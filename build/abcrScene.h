@@ -28,6 +28,7 @@ namespace abcr
     {
         public:
 
+            abcrScene();
             ~abcrScene();
 
             bool open(String^ path, DX11RenderContext^ context, ISpread<String^>^% names);

@@ -7,6 +7,12 @@ namespace Nodes
 namespace abcr
 {
 
+    abcrScene::abcrScene()
+    {
+        this->nameMap = gcnew Dictionary<String^, abcrPtr>();
+        this->fullnameMap = gcnew Dictionary<String^, abcrPtr>();
+    }
+
     abcrScene::~abcrScene() 
     {
 
@@ -20,19 +26,20 @@ namespace abcr
 
         if (!m_archive->valid()) return false;
 
-        /*shared_ptr<abcrGeom> top = shared_ptr<abcrGeom>(new abcrGeom(m_archive->getTop(), context));
+        shared_ptr<abcrGeom> top = shared_ptr<abcrGeom>(new abcrGeom(m_archive->getTop(), context));
         m_top = &top;
-
+        
         {
             nameMap->Clear();
             fullnameMap->Clear();
 
             abcrGeom::setUpDocRecursive(*m_top, nameMap, fullnameMap);
         }
-
+        
         m_minTime = m_top->get()->m_minTime;
-        m_maxTime = m_top->get()->m_maxTime;*/
-
+        m_maxTime = m_top->get()->m_maxTime;
+        
+        names->SliceCount = 1;
         SpreadExtensions::AssignFrom(names, fullnameMap->Keys);
 
         return true;

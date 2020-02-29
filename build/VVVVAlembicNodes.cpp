@@ -288,36 +288,57 @@ namespace Nodes
 
     void abcr::VVVVAlembicScene::Evaluate(int SpreadMax)
     {
-        if (FFirst)
-        {
-            m_scene = gcnew abcrScene();
-            FPath->Sync();
-        }
+        if (FFirst) FPath->Sync();
 
         String^ prevPath = FPath[0];
         FPath->Sync();
 
+        //load file
         if ((FPath[0] != prevPath) || FReload[0] || (FFirst && FPath[0] != "")) 
         {
             this->RenderRequest(this, this->FHost);
 
+            FOutScene->SliceCount = 1;
+            FDulation->SliceCount = 1;
+
+            FOutScene[0] = gcnew abcrScene();
+
+            FDulation[0] = 0;
+
             try
             {
-                m_scene->open(FPath[0], this->AssignedContext, FNames);
+                if (FOutScene[0]->open(FPath[0], this->AssignedContext, FNames))
+                {
+                    FLogger->Log(LogType::Debug, "Success Open");
+                }
+                else
+                {
+                    FLogger->Log(LogType::Debug, "Failed Open : Illigal Format");
+                }
             }
             catch(System::Exception^ e)
             {
-                FLogger->Log(LogType::Debug, "failed : " + e->Message);
+                FLogger->Log(LogType::Debug, "Failed Open : " + e->Message);
             }
+
+            FDulation[0] = FOutScene[0]->getMaxTime();
+        }
+        else if (SpreadMax == 0)
+        {
+            if (FOutScene[0]->valid()) delete FOutScene[0];
+
+            FOutScene->SliceCount = 0;
+            FNames->SliceCount = 0;
+            FDulation->SliceCount = 0;
         }
 
-        if ((FTime->IsChanged || FReload[0] || FFirst) && m_scene->valid())
+        //update
+        if ((FTime->IsChanged || FReload[0] || FFirst) /*&& FOutScene[0]->valid()*/)
         {
 
         }
 
-        FOutScene[0] = m_scene;
-        
+        FFirst = false;
     }
 
 }

@@ -13,7 +13,7 @@ namespace abcr
     abcrGeom::abcrGeom(IObject obj, DX11RenderContext^ context)
         : m_obj(obj), m_context(context), type(UNKNOWN), constant(false)
     {
-        this->setUpNodeRecursive(obj, context);
+        this->setUpNodeRecursive(m_obj, context);
     }
 
     abcrGeom::~abcrGeom()
@@ -35,32 +35,32 @@ namespace abcr
 
             if (AbcGeom::IXform::matches(head))
             {
-                AbcGeom::IXform xform(obj, head.getName());
+                AbcGeom::IXform xform(obj.getChild(i));
                 geom.reset( new abcr::XForm(xform, context));
             }
             else if (AbcGeom::IPoints::matches(head))
             {
-                AbcGeom::IPoints points(obj, head.getName());
+                AbcGeom::IPoints points(obj.getChild(i));
                 geom.reset( new abcr::Points(points, context));
             }
             else if (AbcGeom::ICurves::matches(head))
             {
-                AbcGeom::ICurves curves(obj, head.getName());
+                AbcGeom::ICurves curves(obj.getChild(i));
                 geom.reset( new abcr::Curves(curves, context));
             }
             else if (AbcGeom::IPolyMesh::matches(head))
             {
-                AbcGeom::IPolyMesh pmesh(obj, head.getName());
+                AbcGeom::IPolyMesh pmesh(obj.getChild(i));
                 geom.reset( new abcr::PolyMesh(pmesh, context));
             }
             else if (AbcGeom::ICamera::matches(head))
             {
-                AbcGeom::ICamera camera(obj, head.getName());
+                AbcGeom::ICamera camera(obj.getChild(i));
                 geom.reset( new abcr::Camera(camera, context));
             }
             else
             {
-                geom.reset( new abcrGeom(obj, context));
+                geom.reset( new abcrGeom(obj.getChild(i), context));
             }
 
             if (geom && geom->valid())
@@ -68,7 +68,7 @@ namespace abcr
                 geom->index = m_children.size();
                 this->m_children.emplace_back(geom);
                 this->m_minTime = min(this->m_minTime, geom->m_minTime);
-                this->m_maxTime = min(this->m_maxTime, geom->m_maxTime);
+                this->m_maxTime = max(this->m_maxTime, geom->m_maxTime);
             }
 
         }
