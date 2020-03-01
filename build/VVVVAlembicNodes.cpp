@@ -357,16 +357,28 @@ namespace Nodes
 
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
-        if (FInScene->Stream->IsChanged && FInScene[0].m_Scene)
-        {
-            if(FInScene[0].m_Scene->valid())
-                FLogger->Log(LogType::Debug, "Changed");
-        }
+
     }
 
     void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
     {
+        if (FInScene->Stream->IsChanged && FInScene[0].m_Scene)
+        {
+            if (FInScene[0].m_Scene->valid())
+            {
+                FLogger->Log(LogType::Debug, "Changed");
 
+                size_t cnt = 0;
+                for each (auto obj in FInScene[0].m_Scene->getGeomIterator())
+                {
+                    if (obj.m_ptr->isTypeOf(POLYMESH))
+                    {
+
+                        cnt++;
+                    }
+                }
+            }
+        }
     }
 
     void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)

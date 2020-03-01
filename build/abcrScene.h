@@ -50,6 +50,11 @@ namespace abcr
                 SpreadExtensions::AssignFrom(names, fullnameMap->Keys);
             }
 
+            Dictionary<String^, abcrPtr >::ValueCollection^ getGeomIterator() const
+            {
+                return this->nameMap->Values;
+            }
+
         private:
 
             IArchive m_archive;
