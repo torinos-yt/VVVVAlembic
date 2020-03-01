@@ -294,7 +294,7 @@ namespace Nodes
         FPath->Sync();
 
         //load file
-        if ((FPath[0] != prevPath) || FReload[0] || (FFirst && FPath[0] != "")) 
+        if ((FPath[0] != prevPath) || FReload[0] || (FFirst && FPath[0] != String::Empty)) 
         {
             this->RenderRequest(this, this->FHost);
 
@@ -331,11 +331,10 @@ namespace Nodes
 
             FOutScene->Stream->IsChanged = true;
         }
-        else if (SpreadMax == 0 || FPath->SliceCount == 0 || FPath[0] == "")
+        else if (SpreadMax == 0 || FPath->SliceCount == 0 || FPath[0] == String::Empty)
         {
-            if (FOutScene[0].m_Scene->valid()) delete FOutScene[0].m_Scene;
+            if (FOutScene[0].m_Scene) delete FOutScene[0].m_Scene;
 
-            FOutScene->SliceCount = 0;
             FDulation->SliceCount = 0;
             FNames->SliceCount = 0;
 
@@ -344,13 +343,35 @@ namespace Nodes
 
         //update
         if (((FPath[0] != prevPath) || FTime->IsChanged || FReload[0] || FFirst) 
-            && FOutScene[0].m_Scene->valid())
+            && FOutScene->SliceCount > 0)
         {
-            FOutScene[0].m_Scene->updateSample( ((ISpread<float>^)FTime)[0] );
-            FOutScene->Stream->IsChanged = true;
+            if (FOutScene[0].m_Scene)
+            {
+                FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
+                FOutScene->Stream->IsChanged = true;
+            }
         }
 
         FFirst = false;
+    }
+
+    void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
+    {
+        if (FInScene->Stream->IsChanged && FInScene[0].m_Scene)
+        {
+            if(FInScene[0].m_Scene->valid())
+                FLogger->Log(LogType::Debug, "Changed");
+        }
+    }
+
+    void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
+    {
+
+    }
+
+    void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)
+    {
+
     }
 
 }

@@ -135,6 +135,26 @@ namespace abcr
 
     };
 
+    [PluginInfo(Name = "Mesh", Category = "DX11.Geometry Alembic", Tags = "")]
+    public ref class VVVVAlembicPolyMesh : public IPluginEvaluate, IDX11ResourceHost
+    {
+    public:
+
+        [Input("Scene In", IsSingle = true)]
+        Pin<AbcScene>^ FInScene;
+
+        [Output("Geometry Out")]
+        ISpread<DX11Resource<DX11VertexGeometry^>^>^ FOutGeo;
+
+        [Import()]
+        ILogger^ FLogger;
+
+        virtual void Evaluate(int SpreadMax) override;
+        virtual void Update(DX11RenderContext^ context) override;
+        virtual void Destroy(DX11RenderContext^ context, bool force) override;
+
+    };
+
 }
 }
 }
