@@ -311,6 +311,8 @@ namespace Nodes
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
 
+                    FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
+
                     FDulation->SliceCount = 1;
                     FDulation[0] = FOutScene[0].m_Scene->getMaxTime();
 
@@ -357,28 +359,34 @@ namespace Nodes
 
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
-
+        if (!FOutGeo[0]) FOutGeo[0] = gcnew DX11Resource<DX11VertexGeometry^>();
     }
 
     void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
     {
-        if (FInScene->Stream->IsChanged && FInScene[0].m_Scene)
+        if ((FInScene->Stream->IsChanged || FConnect) && FInScene[0].m_Scene)
         {
             if (FInScene[0].m_Scene->valid())
             {
-                FLogger->Log(LogType::Debug, "Changed");
-
                 size_t cnt = 0;
-                for each (auto obj in FInScene[0].m_Scene->getGeomIterator())
+                for each (auto geom in FInScene[0].m_Scene->getGeomIterator())
                 {
-                    if (obj.m_ptr->isTypeOf(POLYMESH))
+                    if (geom.m_ptr->isTypeOf(POLYMESH))
                     {
+                        FOutMat[cnt] = geom.m_ptr->getTransform();
+                        FNames[cnt] = geom.m_ptr->getName();
 
-                        cnt++;
+                        geom.m_ptr->get(FOutGeo[cnt++]);
                     }
                 }
+
+                FOutGeo->SliceCount = cnt;
+                FOutMat->SliceCount = cnt;
+                FNames->SliceCount = cnt;
             }
         }
+
+        if (FInScene->IsConnected) FConnect = false;
     }
 
     void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)

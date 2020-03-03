@@ -80,8 +80,8 @@ namespace abcr
     {
         if (!obj->isTypeOf(UNKNOWN))
         {
-            nameMap[marshal_as<String^>(obj->getName())] = abcrPtr(obj.get());
-            fullnameMap[marshal_as<String^>(obj->getFullName())] = abcrPtr(obj.get());
+            nameMap[obj->getName()] = abcrPtr(obj.get());
+            fullnameMap[obj->getFullName()] = abcrPtr(obj.get());
         }
 
         for (size_t i = 0; i < obj->m_children.size(); i++)
@@ -656,6 +656,7 @@ namespace abcr
         }
 
         delete vertexStream;
+
     }
 
     Camera::Camera(AbcGeom::ICamera camera, DX11RenderContext^ context)

@@ -23,6 +23,8 @@ using namespace VVVV::PluginInterfaces::V2;
 
 using namespace VVVV::Utils::VMath;
 
+using namespace VVVV::DX11;
+
 using namespace SlimDX;
 using namespace SlimDX::Direct3D11;
 
@@ -95,11 +97,13 @@ namespace abcr
 
         size_t getIndex() const { return index; };
 
-        string getName() const { return m_obj.getName(); };
+        String^ getName() const { return marshal_as<String^>( m_obj.getName() ); };
 
-        string getFullName() const { return m_obj.getFullName(); };
+        String^ getFullName() const { return marshal_as<String^>( m_obj.getFullName() ); };
 
         IObject getIObject() const { return m_obj; };
+
+        Matrix4x4 getTransform() const { return abcrUtils::toVVVV(transform); };
 
         virtual const char* getTypeName() const { return ""; };
 
@@ -109,7 +113,7 @@ namespace abcr
         inline bool isTypeOf() const { return type == type2enum<T>(); };
 
         template <typename T>
-        inline bool get(T& out)
+        inline bool get(T% out)
         {
             return false;
         }
@@ -263,6 +267,15 @@ namespace abcr
 
         abcrPtr(abcrGeom* ptr) : m_ptr(ptr) {}
     };
+
+    template <>
+    inline bool abcrGeom::get(DX11Resource<DX11VertexGeometry^>^% o)
+    {
+        if (type != POLYMESH) return false;
+
+        o[this->m_context] = static_cast<DX11VertexGeometry^>( ((PolyMesh*)this)->geom->ShallowCopy() );
+        return true;
+    }
 
 }
 }

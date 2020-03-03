@@ -146,12 +146,22 @@ namespace abcr
         [Output("Geometry Out")]
         ISpread<DX11Resource<DX11VertexGeometry^>^>^ FOutGeo;
 
+        [Output("Transform Out", Order = 2)]
+        ISpread<Matrix4x4>^ FOutMat;
+
+        [Output("Names", Order = 3)]
+        ISpread<String^>^ FNames;
+
         [Import()]
         ILogger^ FLogger;
 
         virtual void Evaluate(int SpreadMax) override;
         virtual void Update(DX11RenderContext^ context) override;
         virtual void Destroy(DX11RenderContext^ context, bool force) override;
+
+    private:
+
+        bool FConnect = true;
 
     };
 
