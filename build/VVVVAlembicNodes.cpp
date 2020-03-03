@@ -307,7 +307,7 @@ namespace Nodes
 
             try
             {
-                if (FOutScene[0].m_Scene->open(FPath[0], this->AssignedContext))
+                if (FOutScene[0].m_Scene->open(marshal_as<string>(FPath[0]), this->AssignedContext))
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
 
@@ -364,7 +364,7 @@ namespace Nodes
 
     void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
     {
-        if ((FInScene->Stream->IsChanged || FConnect) && FInScene[0].m_Scene)
+        if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
         {
             if (FInScene[0].m_Scene->valid())
             {
@@ -386,7 +386,7 @@ namespace Nodes
             }
         }
 
-        if (FInScene->IsConnected) FConnect = false;
+        if (FInScene->IsConnected) FFirst = false;
     }
 
     void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)

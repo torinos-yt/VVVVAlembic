@@ -22,9 +22,9 @@ namespace abcr
         if (m_archive.valid()) m_archive.reset();
     }
 
-    bool abcrScene::open(String^ path, DX11RenderContext^ context)
+    bool abcrScene::open(const string& path, DX11RenderContext^ context)
     {
-        m_archive = IArchive(AbcCoreOgawa::ReadArchive(), marshal_as<string>(path),
+        m_archive = IArchive(AbcCoreOgawa::ReadArchive(), path,
             Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
 
         if (!m_archive.valid()) return false;
@@ -52,31 +52,31 @@ namespace abcr
     }
 
     //XForm
-    bool abcrScene::getSample(const String^& path, Matrix4x4& xform)
+    bool abcrScene::getSample(const string& path, Matrix4x4& xform)
     {
         return false;
     }
 
     //Points
-    bool abcrScene::getSample(const String^& path, ISpread<Vector3D>^& points)
+    bool abcrScene::getSample(const string& path, ISpread<Vector3D>^& points)
     {
         return false;
     }
 
     //Curves
-    bool abcrScene::getSample(const String^& path, ISpread<ISpread<Vector3D>^>^& curves)
+    bool abcrScene::getSample(const string& path, ISpread<ISpread<Vector3D>^>^& curves)
     {
         return false;
     }
 
     //PolyMesh
-    bool abcrScene::getSample(const String^& path, DX11VertexGeometry^ geom)
+    bool abcrScene::getSample(const string& path, DX11VertexGeometry^ geom)
     {
         return false;
     }
 
     //Camera
-    bool abcrScene::getSample(const String^& path, Matrix4x4& view, Matrix4x4& proj)
+    bool abcrScene::getSample(const string& path, Matrix4x4& view, Matrix4x4& proj)
     {
         return false;
     }

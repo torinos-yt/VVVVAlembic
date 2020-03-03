@@ -161,7 +161,7 @@ namespace abcr
 
     private:
 
-        bool FConnect = true;
+        bool FFirst = true;
 
     };
 

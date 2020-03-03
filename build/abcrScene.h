@@ -31,7 +31,7 @@ namespace abcr
             abcrScene();
             ~abcrScene();
 
-            bool open(String^ path, DX11RenderContext^ context);
+            bool open(const string& path, DX11RenderContext^ context);
 
             void updateSample(float time);
 
@@ -39,11 +39,11 @@ namespace abcr
 
             inline float getMaxTime() const { return m_maxTime; };
             
-            bool getSample(const String^& name, Matrix4x4& xform);                     //XForm
-            bool getSample(const String^& name, ISpread<Vector3D>^& points);           //Points
-            bool getSample(const String^& name, ISpread<ISpread<Vector3D>^>^& curves); //Cueves
-            bool getSample(const String^& name, DX11VertexGeometry^ geom);             //PolyMesh
-            bool getSample(const String^& name, Matrix4x4& view, Matrix4x4& proj);     //Camera
+            bool getSample(const string& name, Matrix4x4& xform);                     //XForm
+            bool getSample(const string& name, ISpread<Vector3D>^& points);           //Points
+            bool getSample(const string& name, ISpread<ISpread<Vector3D>^>^& curves); //Cueves
+            bool getSample(const string& name, DX11VertexGeometry^ geom);             //PolyMesh
+            bool getSample(const string& name, Matrix4x4& view, Matrix4x4& proj);     //Camera
 
             void getFullNameMap(ISpread<String^>^% names)
             {
