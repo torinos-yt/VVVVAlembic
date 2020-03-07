@@ -311,8 +311,6 @@ namespace Nodes
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
 
-                    FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
-
                     FDulation->SliceCount = 1;
                     FDulation[0] = FOutScene[0].m_Scene->getMaxTime();
 
