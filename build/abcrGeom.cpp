@@ -260,6 +260,11 @@ namespace abcr
         hasRGBA = false;
         setMinMaxTime(m_polymesh);
 
+        auto topo = m_polymesh.getSchema().getTopologyVariance();
+
+        IsChangeTopo = topo == AbcGeom::MeshTopologyVariance::kHomogeneousTopology ||
+                       topo == AbcGeom::MeshTopologyVariance::kHomogenousTopology;
+
         auto geomParam = m_polymesh.getSchema().getArbGeomParams();
         size_t nParam = geomParam.getNumProperties();
         for (size_t i = 0; i < nParam; ++i)

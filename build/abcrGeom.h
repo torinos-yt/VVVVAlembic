@@ -230,6 +230,8 @@ namespace abcr
         bool hasRGB;
         bool hasRGBA;
 
+        bool IsChangeTopo;
+
         AbcGeom::IPolyMesh m_polymesh;
         AbcGeom::IC3fGeomParam m_rgb;
         AbcGeom::IC4fGeomParam m_rgba;
