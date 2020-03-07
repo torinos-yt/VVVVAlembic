@@ -240,11 +240,18 @@ namespace abcr
         gcroot<cli::array<InputElement>^> Layout;
     };
 
+    value struct ViewProj
+    {
+        Matrix4x4 View;
+        Matrix4x4 Proj;
+
+        ViewProj(Matrix4x4 v, Matrix4x4 p) : View(v), Proj(p) {};
+    };
+
     class Camera : public abcrGeom
     {
     public:
-        Matrix4x4 view;
-        Matrix4x4 proj;
+        ViewProj VP;
 
         Camera(AbcGeom::ICamera camera, DX11RenderContext^ context);
         ~Camera()
@@ -276,6 +283,15 @@ namespace abcr
         if (type != POLYMESH) return false;
 
         o[this->m_context] = static_cast<DX11VertexGeometry^>( ((PolyMesh*)this)->geom->ShallowCopy() );
+        return true;
+    }
+
+    template <>
+    inline bool abcrGeom::get(ViewProj% o)
+    {
+        if (type != CAMERA) return false;
+
+        o = ((Camera*)this)->VP;
         return true;
     }
 

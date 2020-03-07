@@ -132,21 +132,18 @@ namespace abcr
 
     void XForm::set(chrono_t time, Imath::M44f& transform)
     {
-        if (this->constant || time < this->m_minTime || time > m_maxTime)
+        if (!this->constant && time > this->m_minTime && time < m_maxTime)
         {
-            transform = this->mat * transform;
-            return;
+            ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+
+            const Imath::M44d& m = m_xform.getSchema().getValue(ss).getMatrix();
+            const double* src = m.getValue();
+            float* dst = this->mat.getValue();
+
+            for (size_t i = 0; i < 16; ++i) dst[i] = src[i];
         }
 
-        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
-
-        const Imath::M44d& m = m_xform.getSchema().getValue(ss).getMatrix();
-        const double* src = m.getValue();
-        float* dst = this->mat.getValue();
-
-        for (size_t i = 0; i < 16; ++i) dst[i] = src[i];
-
-        transform = this->mat * transform;
+        transform =  this->mat * transform;
     }
 
     Points::Points(AbcGeom::IPoints points, DX11RenderContext^ context)
@@ -679,7 +676,7 @@ namespace abcr
 
     void Camera::set(chrono_t time, Imath::M44f& transform)
     {
-        if (this->constant) return;
+        if (this->constant) time = m_minTime;
 
         ISampleSelector ss(time, ISampleSelector::kFloorIndex);
         
@@ -695,8 +692,8 @@ namespace abcr
 
         float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
 
-        this->proj = VMath::PerspectiveLH(FoV, Near, Far, 1.0);
-        this->view = VMath::Inverse(abcrUtils::toVVVV(this->transform));
+        this->VP = ViewProj(VMath::Inverse(abcrUtils::toVVVV(this->transform)),
+                            VMath::PerspectiveLH(FoV, Near, Far, 1.0) );
     }
     
 }

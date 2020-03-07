@@ -24,9 +24,6 @@ namespace abcr
 
     bool abcrScene::open(const string& path, DX11RenderContext^ context)
     {
-        if(m_top) m_top.reset();
-        if (m_archive.valid()) m_archive.reset();
-
         m_archive = IArchive(AbcCoreOgawa::ReadArchive(), path,
             Alembic::Abc::ErrorHandler::kQuietNoopPolicy);
 

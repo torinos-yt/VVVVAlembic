@@ -165,6 +165,34 @@ namespace abcr
 
     };
 
+    [PluginInfo(Name = "Camera", Category = "Transform Alembic", Tags = "")]
+    public ref class VVVVAlembicCamera : public IPluginEvaluate
+    {
+    public:
+
+        [Input("Scene In", IsSingle = true)]
+        Pin<AbcScene>^ FInScene;
+
+        [Output("View", Order = 1)]
+        ISpread<Matrix4x4>^ FOutView;
+
+        [Output("Projection", Order = 2)]
+        ISpread<Matrix4x4>^ FOutProj;
+
+        [Output("Names", Order = 3)]
+        ISpread<String^>^ FNames;
+
+        [Import()]
+        ILogger^ FLogger;
+
+        virtual void Evaluate(int SpreadMax) override;
+
+    private:
+
+        bool FFirst = true;
+
+    };
+
 }
 }
 }

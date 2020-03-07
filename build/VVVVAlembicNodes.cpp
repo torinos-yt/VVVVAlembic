@@ -347,7 +347,14 @@ namespace Nodes
         {
             if (FOutScene[0].m_Scene)
             {
-                FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
+                try
+                {
+                    FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
+                }
+                catch (Alembic::Util::Exception e)
+                {
+                    FLogger->Log(LogType::Debug, "Failed Update : " + marshal_as<String^>(e.what()));
+                }
                 FOutScene->Stream->IsChanged = true;
             }
         }
@@ -390,6 +397,38 @@ namespace Nodes
     void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)
     {
 
+    }
+
+    void abcr::VVVVAlembicCamera::Evaluate(int SpreadMax)
+    {
+        if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
+        {
+            if (FInScene[0].m_Scene->valid())
+            {
+                size_t cnt = 0;
+                for each (auto cam in FInScene[0].m_Scene->getGeomIterator())
+                {
+                    if (cam.m_ptr->isTypeOf(CAMERA))
+                    {
+                        ViewProj VP;
+
+                        FNames[cnt] = cam.m_ptr->getName();
+
+                        cam.m_ptr->get(VP);
+                        FOutView[cnt] = VP.View;
+                        FOutProj[cnt] = VP.Proj;
+
+                        cnt++;
+                    }
+                }
+
+                FOutView->SliceCount = cnt;
+                FOutProj->SliceCount = cnt;
+                FNames->SliceCount = cnt;
+            }
+        }
+
+        if (FInScene->IsConnected) FFirst = false;
     }
 
 }
