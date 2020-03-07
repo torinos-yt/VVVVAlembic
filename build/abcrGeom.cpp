@@ -138,7 +138,7 @@ namespace abcr
             return;
         }
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
 
         const Imath::M44d& m = m_xform.getSchema().getValue(ss).getMatrix();
         const double* src = m.getValue();
@@ -169,7 +169,7 @@ namespace abcr
         AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
         AbcGeom::IPointsSchema::Sample pts_sample;
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
 
         ptSchema.get(pts_sample, ss);
 
@@ -215,7 +215,7 @@ namespace abcr
         AbcGeom::ICurvesSchema curvSchema = m_curves.getSchema();
         AbcGeom::ICurvesSchema::Sample curve_sample;
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
 
         curvSchema.get(curve_sample, ss);
 
@@ -306,7 +306,7 @@ namespace abcr
         AbcGeom::IPolyMeshSchema mesh = m_polymesh.getSchema();
         AbcGeom::IPolyMeshSchema::Sample mesh_samp;
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
         
         mesh.get(mesh_samp, ss);
 
@@ -676,7 +676,7 @@ namespace abcr
     {
         if (this->constant) return;
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
+        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
         
         AbcGeom::CameraSample cam_samp;
         AbcGeom::ICameraSchema camSchema = m_camera.getSchema();
