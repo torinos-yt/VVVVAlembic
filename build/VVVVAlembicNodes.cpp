@@ -365,7 +365,6 @@ namespace Nodes
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
         if (!FOutGeo[0]) FOutGeo[0] = gcnew DX11Resource<DX11VertexGeometry^>();
-        if (!FOutGeo[1]) FOutGeo[1] = gcnew DX11Resource<DX11VertexGeometry^>();
 
         if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
         {
@@ -379,6 +378,9 @@ namespace Nodes
                     {
                         FOutMat[cnt] = geom.m_ptr->getTransform();
                         FNames[cnt] = geom.m_ptr->getName();
+
+                        if (!FOutGeo[cnt])
+                            FOutGeo[cnt] = gcnew DX11Resource<DX11VertexGeometry^>();
 
                         geom.m_ptr->get(FOutGeo[cnt++]);
 
