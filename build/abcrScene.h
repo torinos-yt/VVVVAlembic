@@ -33,7 +33,7 @@ namespace abcr
 
             bool open(const string& path, DX11RenderContext^ context);
 
-            void updateSample(float time);
+            bool updateSample(float time);
 
             bool valid() const { return m_top->valid(); };
 
@@ -66,6 +66,8 @@ namespace abcr
 
             gcroot<Dictionary<String^, abcrPtr>^> nameMap;
             gcroot<Dictionary<String^, abcrPtr>^> fullnameMap;
+
+            size_t currentIdx;
 
     };
 }

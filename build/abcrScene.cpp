@@ -39,16 +39,33 @@ namespace abcr
         m_minTime = m_top->m_minTime;
         m_maxTime = m_top->m_maxTime;
 
+        currentIdx = 0;
+
         return true;
     }
 
-    void abcrScene::updateSample(float time)
+    bool abcrScene::updateSample(float time)
     {
-        if (!m_top) return;
+        if (!m_top) return false;
 
-        Imath::M44f m;
-        m.makeIdentity();
-        m_top->updateTimeSample(time, m);
+        auto timeSample = m_archive.getTimeSampling(1);
+        auto maxSample = m_archive.getMaxNumSamplesForTimeSamplingIndex(1);
+        auto nSample = maxSample / timeSample->getTimeSamplingType().getNumSamplesPerCycle();
+        auto idx = timeSample->getNearIndex(time, nSample).first;
+
+        if (currentIdx != idx)
+        {
+            currentIdx = idx;
+
+            Imath::M44f m;
+            m.makeIdentity();
+            m_top->updateTimeSample(time, m);
+
+            return true;
+        }
+
+        return false;
+
     }
 
     //XForm

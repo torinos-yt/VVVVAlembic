@@ -9,9 +9,9 @@
    <PACK Name="addonpack" Version="39.0.0">
    </PACK>
    <NODE systemname="Renderer (TTY)" nodename="Renderer (TTY)" componentmode="InAWindow" id="3" stayontop="1">
-   <BOUNDS type="Node" left="6495" top="5250" width="100" height="100">
+   <BOUNDS type="Node" left="6495" top="5265" width="100" height="100">
    </BOUNDS>
-   <BOUNDS type="Box" left="6495" top="5250" width="2400" height="1800">
+   <BOUNDS type="Box" left="6495" top="5265" width="2400" height="1800">
    </BOUNDS>
    <BOUNDS type="Window" left="0" top="10320" width="9000" height="5085">
    </BOUNDS>
@@ -25,7 +25,7 @@
    </BOUNDS>
    <BOUNDS type="Box" left="1140" top="7440" width="6000" height="4500">
    </BOUNDS>
-   <BOUNDS type="Window" left="8850" top="1350" width="19605" height="14025">
+   <BOUNDS type="Window" left="8850" top="1350" width="17325" height="10485">
    </BOUNDS>
    <PIN pinname="Layers" visible="1" slicecount="1" values="||">
    </PIN>
@@ -149,13 +149,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Time">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
-   </PIN>
-   </NODE>
-   <NODE systemname="AxisAndGrid (DX11)" filename="%VVVV%\packs\mp.dx\nodes\modules\essentials\AxisAndGrid (DX11).v4p" nodename="AxisAndGrid (DX11)" componentmode="Hidden" id="27">
-   <BOUNDS type="Node" left="855" top="4785" width="100" height="100">
-   </BOUNDS>
-   <PIN pinname="Layer" visible="1">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0.91">
    </PIN>
    </NODE>
    <NODE systemname="Group (DX11.Layer)" filename="%VVVV%\packs\dx11\nodes\plugins\base\VVVV.DX11.Nodes.dll" nodename="Group (DX11.Layer)" componentmode="Hidden" id="28">
@@ -165,7 +159,7 @@
    </BOUNDS>
    <PIN pinname="Layer 2" visible="1" slicecount="1" values="||">
    </PIN>
-   <PIN pinname="Layer 1" visible="1">
+   <PIN pinname="Layer 1" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="Layer Out" visible="1">
    </PIN>
@@ -352,16 +346,6 @@
    </LINK>
    <LINK srcnodeid="16" srcpinname="Layer Out" dstnodeid="12" dstpinname="Layers">
    </LINK>
-   <NODE systemname="Camera (Transform Orbit)" filename="%VVVV%\lib\nugets\VL.EditingFramework.2019.1.0-0959-g3a31ab0c51\vvvv\nodes\modules\Camera (Transform Orbit).v4p" nodename="Camera (Transform Orbit)" componentmode="Hidden" id="51">
-   <BOUNDS type="Node" left="3795" top="6585" width="100" height="100">
-   </BOUNDS>
-   <PIN pinname="View" visible="1">
-   </PIN>
-   <PIN pinname="Filter Time" slicecount="1" values="0">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="27" srcpinname="Layer" dstnodeid="28" dstpinname="Layer 1">
-   </LINK>
    <LINK srcnodeid="11" srcpinname="Layer" dstnodeid="28" dstpinname="Layer 3">
    </LINK>
    <LINK srcnodeid="39" srcpinname="View" dstnodeid="12" dstpinname="View">
@@ -382,8 +366,6 @@
    </NODE>
    <LINK srcnodeid="52" srcpinname="Output Enum" dstnodeid="16" dstpinname="Alignment">
    </LINK>
-   <LINK srcnodeid="18" srcpinname="Output" dstnodeid="23" dstpinname="Y Input Value">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="53" systemname="IOBox (String)">
    <BOUNDS type="Box" left="3315" top="4860" width="915" height="630">
    </BOUNDS>
@@ -401,5 +383,7 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="37" srcpinname="Names" dstnodeid="53" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="18" srcpinname="Output" dstnodeid="23" dstpinname="Y Input Value">
    </LINK>
    </PATCH>

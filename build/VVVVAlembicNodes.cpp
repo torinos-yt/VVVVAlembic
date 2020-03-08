@@ -349,13 +349,13 @@ namespace Nodes
             {
                 try
                 {
-                    FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]);
+                    if(FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]))
+                        FOutScene->Stream->IsChanged = true;
                 }
                 catch (Alembic::Util::Exception e)
                 {
                     FLogger->Log(LogType::Debug, "Failed Update : " + marshal_as<String^>(e.what()));
                 }
-                FOutScene->Stream->IsChanged = true;
             }
         }
 
