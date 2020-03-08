@@ -365,11 +365,13 @@ namespace Nodes
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
         if (!FOutGeo[0]) FOutGeo[0] = gcnew DX11Resource<DX11VertexGeometry^>();
+        if (!FOutGeo[1]) FOutGeo[1] = gcnew DX11Resource<DX11VertexGeometry^>();
 
         if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
         {
             if (FInScene[0].m_Scene->valid())
             {
+
                 size_t cnt = 0;
                 for each (auto geom in FInScene[0].m_Scene->getGeomIterator())
                 {
@@ -379,12 +381,14 @@ namespace Nodes
                         FNames[cnt] = geom.m_ptr->getName();
 
                         geom.m_ptr->get(FOutGeo[cnt++]);
+
                     }
                 }
 
                 FOutGeo->SliceCount = cnt;
                 FOutMat->SliceCount = cnt;
                 FNames->SliceCount = cnt;
+
             }
         }
 

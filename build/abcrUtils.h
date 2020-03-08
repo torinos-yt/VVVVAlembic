@@ -12,12 +12,12 @@ namespace abcrUtils
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::V3f& v)
     {
-        return SlimDX::Vector3(v.x, v.y, -v.z);
+        return SlimDX::Vector3(-v.x, v.y, v.z);
     }
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::V3d& v)
     {
-        return SlimDX::Vector3(v.x, v.y, v.z);
+        return SlimDX::Vector3(-v.x, v.y, v.z);
     }
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::C3f& v)
@@ -37,7 +37,7 @@ namespace abcrUtils
 
     inline SlimDX::Quaternion toSlimDX(const Imath::Quatd& q)
     {
-        return SlimDX::Quaternion(q[1], q[2], q[3], q[0]);
+        return SlimDX::Quaternion(-q.v[0], q.v[1], q.v[2], -q.r);
     }
 
     inline SlimDX::Matrix toSlimDX(const VVVV::Utils::VMath::Matrix4x4& m)
@@ -80,11 +80,6 @@ namespace abcrUtils
             m.M21, m.M22, m.M23, m.M24,
             m.M31, m.M32, m.M33, m.M34,
             m.M41, m.M42, m.M43, m.M44);
-    }
-
-    inline Imath::Quatd toLH(const Imath::Quatd& q)
-    {
-        return Imath::Quatd(q[1], q[2], q[3], q[0]);
     }
 
     inline SlimDX::Matrix toLH(const SlimDX::Matrix& m)
@@ -131,8 +126,8 @@ namespace abcrUtils
 
         SlimDX::Matrix M = SlimDX::Matrix::Identity;
 
-        M *= abcrUtils::toLH(SlimDX::Matrix::RotationQuaternion(rotation));
-        M *= SlimDX::Matrix::Translation(abcrUtils::toSlimDX(translate));
+        M *= SlimDX::Matrix::RotationQuaternion(rotation);
+        M *= SlimDX::Matrix::Translation(toSlimDX(translate));
 
         return toVVVV(M);
     }

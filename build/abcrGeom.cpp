@@ -285,15 +285,18 @@ namespace abcr
         }
         if (!hasRGB && !hasRGBA)
         {
-            vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
-            Layout = Pos3Norm3Tex2Vertex::Layout;
+            this->vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
+            this->Layout = Pos3Norm3Tex2Vertex::Layout;
         }
+
+        this->geom = gcnew DX11VertexGeometry(this->m_context);
 
         if (m_polymesh.getSchema().isConstant()) 
         {
             this->set(m_minTime, this->transform);
             this->constant = true;
         }
+
     }
 
     void PolyMesh::set(chrono_t time, Imath::M44f& transform)
@@ -368,14 +371,14 @@ namespace abcr
 
                 if (count >= 3)
                 {
-                    m_triangles.push_back(tri((unsigned int)fBegin + 2,
+                    m_triangles.push_back(tri((unsigned int)fBegin + 0,
                         (unsigned int)fBegin + 1,
-                        (unsigned int)fBegin + 0));
+                        (unsigned int)fBegin + 2));
                     for (size_t c = 3; c < count; ++c)
                     {
-                        m_triangles.push_back(tri((unsigned int)fBegin + c,
+                        m_triangles.push_back(tri((unsigned int)fBegin + 0,
                             (unsigned int)fBegin + c - 1,
-                            (unsigned int)fBegin + 0));
+                            (unsigned int)fBegin + c));
                     }
                 }
             }
@@ -692,7 +695,7 @@ namespace abcr
 
         float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
 
-        this->VP = ViewProj(VMath::Inverse(abcrUtils::toVVVV(transform)),
+        this->VP = ViewProj(VMath::Inverse(VMath::RotateY(VMath::Pi) * abcrUtils::toVVVV(transform)),
                             VMath::PerspectiveLH(FoV, Near, Far, 1.0));
     }
     
