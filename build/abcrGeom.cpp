@@ -696,7 +696,7 @@ namespace abcr
         float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
 
         this->VP = ViewProj(VMath::Inverse(VMath::RotateY(VMath::Pi) * abcrUtils::toVVVV(transform)),
-                            VMath::PerspectiveLH(FoV, Near, Far, 1.0));
+                            VMath::PerspectiveLH(FoV*VMath::DegToCyc, Near, Far, 1.0));
     }
     
 }
