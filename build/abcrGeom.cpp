@@ -132,9 +132,9 @@ namespace abcr
 
     void XForm::set(chrono_t time, Imath::M44f& transform)
     {
-        if (!this->constant && time > this->m_minTime && time < m_maxTime)
+        if (!this->constant)
         {
-            ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+            ISampleSelector ss(time, ISampleSelector::kNearIndex);
 
             const Imath::M44d& m = m_xform.getSchema().getValue(ss).getMatrix();
             const double* src = m.getValue();
@@ -154,7 +154,7 @@ namespace abcr
 
         if (m_points.getSchema().isConstant())
         {
-            this->set(m_minTime, this->transform);
+            this->set(this->m_minTime, this->transform);
             this->constant = true;
         }
     }
@@ -166,7 +166,7 @@ namespace abcr
         AbcGeom::IPointsSchema ptSchema = m_points.getSchema();
         AbcGeom::IPointsSchema::Sample pts_sample;
 
-        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
 
         ptSchema.get(pts_sample, ss);
 
@@ -212,7 +212,7 @@ namespace abcr
         AbcGeom::ICurvesSchema curvSchema = m_curves.getSchema();
         AbcGeom::ICurvesSchema::Sample curve_sample;
 
-        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
 
         curvSchema.get(curve_sample, ss);
 
@@ -308,7 +308,7 @@ namespace abcr
         AbcGeom::IPolyMeshSchema mesh = m_polymesh.getSchema();
         AbcGeom::IPolyMeshSchema::Sample mesh_samp;
 
-        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
         
         mesh.get(mesh_samp, ss);
 
@@ -678,7 +678,7 @@ namespace abcr
     {
         if (this->constant) time = m_minTime;
 
-        ISampleSelector ss(time, ISampleSelector::kFloorIndex);
+        ISampleSelector ss(time, ISampleSelector::kNearIndex);
         
         AbcGeom::CameraSample cam_samp;
         AbcGeom::ICameraSchema camSchema = m_camera.getSchema();
@@ -692,8 +692,8 @@ namespace abcr
 
         float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
 
-        this->VP = ViewProj(VMath::Inverse(abcrUtils::toVVVV(this->transform)),
-                            VMath::PerspectiveLH(FoV, Near, Far, 1.0) );
+        this->VP = ViewProj(VMath::Inverse(abcrUtils::toVVVV(transform)),
+                            VMath::PerspectiveLH(FoV, Near, Far, 1.0));
     }
     
 }

@@ -310,7 +310,7 @@ namespace Nodes
                 if (FOutScene[0].m_Scene->open(marshal_as<string>(FPath[0]), this->AssignedContext))
                 {
                     FLogger->Log(LogType::Debug, "Success Open");
-
+                    
                     FDulation->SliceCount = 1;
                     FDulation[0] = FOutScene[0].m_Scene->getMaxTime();
 
