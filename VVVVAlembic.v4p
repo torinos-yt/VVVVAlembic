@@ -245,7 +245,7 @@
    </BOUNDS>
    <BOUNDS type="Node" left="3525" top="660" width="0" height="0">
    </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="1">
+   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
    </PIN>
    <PIN pinname="Units" slicecount="1" values="||">
    </PIN>
@@ -255,7 +255,7 @@
    </PIN>
    <PIN pinname="Behavior" slicecount="1" values="Toggle">
    </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="1">
+   <PIN pinname="X Input Value" slicecount="1" values="0">
    </PIN>
    </NODE>
    <LINK srcnodeid="29" srcpinname="Y Output Value" dstnodeid="17" dstpinname="Pause">
@@ -449,7 +449,7 @@
    </PIN>
    <PIN pinname="Layer" visible="1">
    </PIN>
-   <PIN pinname="Render State" visible="1">
+   <PIN pinname="Render State" visible="1" slicecount="1" values="||">
    </PIN>
    </NODE>
    <LINK srcnodeid="45" srcpinname="Geometry Out" dstnodeid="48" dstpinname="Geometry">
@@ -490,8 +490,8 @@
    </LINK>
    <LINK srcnodeid="44" srcpinname="Transform Out" dstnodeid="49" dstpinname="Transform">
    </LINK>
-   <LINK srcnodeid="13" srcpinname="View" dstnodeid="12" dstpinname="View">
+   <LINK srcnodeid="18" srcpinname="Output" dstnodeid="23" dstpinname="Y Input Value">
    </LINK>
-   <LINK srcnodeid="31" srcpinname="Render State" dstnodeid="48" dstpinname="Render State">
+   <LINK srcnodeid="39" srcpinname="View" dstnodeid="12" dstpinname="View">
    </LINK>
    </PATCH>

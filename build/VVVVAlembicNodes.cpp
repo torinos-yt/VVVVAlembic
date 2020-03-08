@@ -365,10 +365,7 @@ namespace Nodes
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
         if (!FOutGeo[0]) FOutGeo[0] = gcnew DX11Resource<DX11VertexGeometry^>();
-    }
 
-    void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
-    {
         if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
         {
             if (FInScene[0].m_Scene->valid())
@@ -392,11 +389,6 @@ namespace Nodes
         }
 
         if (FInScene->IsConnected) FFirst = false;
-    }
-
-    void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)
-    {
-
     }
 
     void abcr::VVVVAlembicCamera::Evaluate(int SpreadMax)

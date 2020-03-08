@@ -136,7 +136,7 @@ namespace abcr
     };
 
     [PluginInfo(Name = "Mesh", Category = "DX11.Geometry Alembic", Tags = "")]
-    public ref class VVVVAlembicPolyMesh : public IPluginEvaluate, IDX11ResourceHost
+    public ref class VVVVAlembicPolyMesh : public IPluginEvaluate
     {
     public:
 
@@ -156,8 +156,6 @@ namespace abcr
         ILogger^ FLogger;
 
         virtual void Evaluate(int SpreadMax) override;
-        virtual void Update(DX11RenderContext^ context) override;
-        virtual void Destroy(DX11RenderContext^ context, bool force) override;
 
     private:
 
