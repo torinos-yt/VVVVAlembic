@@ -39,7 +39,7 @@ namespace abcr
         m_minTime = m_top->m_minTime;
         m_maxTime = m_top->m_maxTime;
 
-        currentIdx = 0;
+        currentIdx = -1;
 
         return true;
     }
