@@ -277,6 +277,16 @@ namespace abcr
         abcrPtr(abcrGeom* ptr) : m_ptr(ptr) {}
     };
 
+    //Points
+    template <>
+    inline bool abcrGeom::get(ISpread<Vector3D>^% o)
+    {
+        if (type != POINTS) return false;
+        SpreadExtensions::AssignFrom(o, static_cast<ISpread<Vector3D>^>(((Points*)this)->points));
+        return true;
+    }
+
+    //PolyMesh
     template <>
     inline bool abcrGeom::get(DX11Resource<DX11VertexGeometry^>^% o)
     {
@@ -286,6 +296,7 @@ namespace abcr
         return true;
     }
 
+    //Camera
     template <>
     inline bool abcrGeom::get(ViewProj% o)
     {

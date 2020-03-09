@@ -135,6 +135,34 @@ namespace abcr
 
     };
 
+    [PluginInfo(Name = "Point", Category = "3D Alembic", Tags = "")]
+    public ref class VVVVAlembicPoint : public IPluginEvaluate
+    {
+    public:
+
+        [Input("Scene In", IsSingle = true)]
+        Pin<AbcScene>^ FInScene;
+
+        [Output("Out", Order = 0)]
+        ISpread<ISpread<Vector3D>^>^ FOutPoints;
+
+        [Output("Transform Out", Order = 2)]
+        ISpread<Matrix4x4>^ FOutMat;
+
+        [Output("Names", Order = 3)]
+        ISpread<String^>^ FNames;
+
+        [Import()]
+        ILogger^ FLogger;
+
+        virtual void Evaluate(int SpreadMax) override;
+
+    private:
+
+        bool FFirst = true;
+
+    };
+
     [PluginInfo(Name = "Mesh", Category = "DX11.Geometry Alembic", Tags = "")]
     public ref class VVVVAlembicPolyMesh : public IPluginEvaluate
     {
@@ -194,13 +222,3 @@ namespace abcr
 }
 }
 }
-
-
-string ToporogyArray[5] =
-{
-    "kConstantTopology",     //0
-    "kHomogenousTopology",   //1
-    "kHomogeneousTopology",  //2
-    "kHeterogenousTopology", //3
-    "kHeterogeneousTopology" //4
-};

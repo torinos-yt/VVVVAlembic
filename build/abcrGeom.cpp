@@ -188,7 +188,7 @@ namespace abcr
         for (size_t i = 0; i < nPts; i++)
         {
             const V3f& v = src[i];
-            static_cast<ISpread<Vector3D>^>(this->points)[0] = Vector3D(v.x, v.y, v.z);
+            static_cast<ISpread<Vector3D>^>(this->points)[i] = abcrUtils::toVVVV(v);
         }
     }
 
