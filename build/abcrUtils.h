@@ -5,27 +5,27 @@
 namespace abcrUtils
 {
 
-    inline SlimDX::Vector2 toSlimDX(const Alembic::AbcGeom::V2f& v)
+    inline SlimDX::Vector2 toSlimDX(const Alembic::Abc::V2f& v)
     {
         return SlimDX::Vector2(v.x, v.y);
     }
 
-    inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::V3f& v)
+    inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::V3f& v)
     {
         return SlimDX::Vector3(-v.x, v.y, v.z);
     }
 
-    inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::V3d& v)
+    inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::V3d& v)
     {
         return SlimDX::Vector3(-v.x, v.y, v.z);
     }
 
-    inline SlimDX::Vector3 toSlimDX(const Alembic::AbcGeom::C3f& v)
+    inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::C3f& v)
     {
         return SlimDX::Vector3(v.x, v.y, v.z);
     }
 
-    inline SlimDX::Vector4 toSlimDX(const Alembic::AbcGeom::C4f& v)
+    inline SlimDX::Vector4 toSlimDX(const Alembic::Abc::C4f& v)
     {
         return SlimDX::Vector4(v.r, v.g, v.b, v.a);
     }
@@ -64,9 +64,9 @@ namespace abcrUtils
         return M;
     }
 
-    inline VVVV::Utils::VMath::Vector3D toVVVV(const Alembic::AbcGeom::V3f& v)
+    inline VVVV::Utils::VMath::Vector3D toVVVV(const Alembic::Abc::V3f& v)
     {
-        return VVVV::Utils::VMath::Vector3D(v.x, v.y, v.z);
+        return VVVV::Utils::VMath::Vector3D(-v.x, v.y, v.z);
     }
 
     inline VVVV::Utils::VMath::Vector3D toVVVV(const SlimDX::Vector3& v)
@@ -110,24 +110,24 @@ namespace abcrUtils
     {
         Imath::M44d mat(m);
 
-        Imath::V3d translate;
+        Imath::V3d transform;
         Imath::V3d scale;
         Imath::V3d shear;
 
         Imath::extractAndRemoveScalingAndShear(mat, scale, shear, false);
 
-        translate.x = mat[3][0];
-        translate.y = mat[3][1];
-        translate.z = mat[3][2];
-        translate *= scale;
+        transform.x = mat[3][0];
+        transform.y = mat[3][1];
+        transform.z = mat[3][2];
+        transform *= scale;
 
-        SlimDX::Quaternion rotation;
-        rotation = toSlimDX(Imath::extractQuat(mat));
+        Imath::Quatd r = Imath::extractQuat(mat);
+        auto rotation = toSlimDX(r);
 
         SlimDX::Matrix M = SlimDX::Matrix::Identity;
 
         M *= SlimDX::Matrix::RotationQuaternion(rotation);
-        M *= SlimDX::Matrix::Translation(toSlimDX(translate));
+        M *= SlimDX::Matrix::Translation(toSlimDX(transform));
 
         return toVVVV(M);
     }
