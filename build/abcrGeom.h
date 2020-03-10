@@ -147,21 +147,23 @@ namespace abcr
 
     class XForm : public abcrGeom
     {
-        public:
+    public:
 
-            Imath::M44f mat;
+        Imath::M44f mat;
 
-            XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
-            ~XForm()
-            {
-                if (m_xform) m_xform.reset();
-            }
+        XForm(AbcGeom::IXform xform, DX11RenderContext^ context);
+        ~XForm()
+        {
+            if (m_xform) m_xform.reset();
+        }
 
-            void set(chrono_t time, Imath::M44f& transform) override;
+        const char* getTypeNmae() const { return "XForm"; }
 
-        private:
+        void set(chrono_t time, Imath::M44f& transform) override;
 
-            AbcGeom::IXform m_xform;
+    private:
+
+        AbcGeom::IXform m_xform;
 
     };
 
@@ -178,6 +180,8 @@ namespace abcr
             if (static_cast<ISpread<Vector3D>^>(this->points) == nullptr)
                 delete this->points;
         }
+
+        const char* getTypeNmae() const { return "Points"; }
 
         void set(chrono_t time, Imath::M44f& transform) override;
 
@@ -199,6 +203,9 @@ namespace abcr
             if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) != nullptr)
                 delete this->curves;
         }
+
+        const char* getTypeNmae() const { return "Curves"; }
+        int getCurveCount() const { return this->curves->SliceCount; }
 
         void set(chrono_t time, Imath::M44f& transform) override;
 
@@ -259,14 +266,13 @@ namespace abcr
             if (m_camera) m_camera.reset();
         }
 
-    protected:
+        const char* getTypeNmae() const { return "Camera"; }
 
         void set(chrono_t time, Imath::M44f& transform) override;
 
     private:
 
         AbcGeom::ICamera m_camera;
-        AbcGeom::CameraSample m_sample;
 
     };
 
@@ -282,7 +288,18 @@ namespace abcr
     inline bool abcrGeom::get(ISpread<Vector3D>^% o)
     {
         if (type != POINTS) return false;
+
         SpreadExtensions::AssignFrom(o, static_cast<ISpread<Vector3D>^>(((Points*)this)->points));
+        return true;
+    }
+
+    //Curve
+    template <>
+    inline bool abcrGeom::get(ISpread<ISpread<Vector3D>^>^% o)
+    {
+        if (type != CURVES) return false;
+
+        SpreadExtensions::AddRange(o, static_cast<ISpread<ISpread<Vector3D>^>^>(((Curves*)this)->curves));
         return true;
     }
 

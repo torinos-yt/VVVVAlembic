@@ -49,7 +49,7 @@ namespace Nodes
 namespace abcr
 {
 
-    [PluginInfo(Name = "Alembic File", Category = "DX11.Geometry Alembic", Tags = "")]
+    [PluginInfo(Name = "AlembicFile", Category = "DX11.Geometry Alembic", Tags = "")]
     public ref class VVVVAlembicReader : public IPluginEvaluate, IDX11ResourceHost
     {
     public:
@@ -94,7 +94,7 @@ namespace abcr
         abcrScene* m_Scene;
     };
 
-    [PluginInfo(Name = "Alembic Scene", Category = "Alembic", Tags = "")]
+    [PluginInfo(Name = "AlembicScene", Category = "Alembic", Tags = "")]
     public ref class VVVVAlembicScene : public IPluginEvaluate, IDX11ResourceDataRetriever
     {
     public:
@@ -150,6 +150,37 @@ namespace abcr
         ISpread<Matrix4x4>^ FOutMat;
 
         [Output("Names", Order = 3)]
+        ISpread<String^>^ FNames;
+
+        [Import()]
+        ILogger^ FLogger;
+
+        virtual void Evaluate(int SpreadMax) override;
+
+    private:
+
+        bool FFirst = true;
+
+    };
+
+    [PluginInfo(Name = "Curve", Category = "3D Alembic", Tags = "")]
+    public ref class VVVVAlembicCurve : public IPluginEvaluate
+    {
+    public:
+
+        [Input("Scene In", IsSingle = true)]
+        Pin<AbcScene>^ FInScene;
+
+        [Output("Out", Order = 0)]
+        ISpread<ISpread<Vector3D>^>^ FOutPoints;
+
+        [Output("Curve Count", Order = 2)]
+        ISpread<int>^ FOutCnt;
+
+        [Output("Transform Out", Order = 3)]
+        ISpread<Matrix4x4>^ FOutMat;
+
+        [Output("Names", Order = 4)]
         ISpread<String^>^ FNames;
 
         [Import()]

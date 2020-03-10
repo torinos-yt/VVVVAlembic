@@ -392,6 +392,39 @@ namespace Nodes
         if (FInScene->IsConnected) FFirst = false;
     }
 
+    void abcr::VVVVAlembicCurve::Evaluate(int SpreadMax)
+    {
+        if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
+        {
+            if (FInScene[0].m_Scene->valid())
+            {
+
+                size_t cnt = 0;
+                delete FOutPoints;
+                FOutPoints = gcnew Spread<ISpread<Vector3D>^>();
+                for each (auto curves in FInScene[0].m_Scene->getGeomIterator())
+                {
+                    if (curves.m_ptr->isTypeOf(CURVES))
+                    {
+                        FOutMat[cnt] = curves.m_ptr->getTransform();
+                        FNames[cnt] = curves.m_ptr->getName();
+                        FOutCnt[cnt] = ((Curves*)curves.m_ptr)->getCurveCount();
+
+                        curves.m_ptr->get(FOutPoints);
+
+                    }
+                }
+
+                FOutPoints->SliceCount = cnt;
+                FOutMat->SliceCount = cnt;
+                FNames->SliceCount = cnt;
+
+            }
+        }
+
+        if (FInScene->IsConnected) FFirst = false;
+    }
+
     void abcr::VVVVAlembicPolyMesh::Evaluate(int SpreadMax)
     {
         if (!FOutGeo[0]) FOutGeo[0] = gcnew DX11Resource<DX11VertexGeometry^>();
