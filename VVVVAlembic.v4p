@@ -1,12 +1,12 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta39.dtd" >
-   <PATCH nodename="F:\vvvv\work\VVVVAlembic\VVVVAlembic.v4p" systemname="VVVVAlembic" filename="F:\vvvv\work\VVVVAlembic\VVVVAlembic.v4p" scrollx="105" scrolly="-360">
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50alpha38.2.dtd" >
+   <PATCH nodename="C:\vvvv\work\VVVVAlembic\VVVVAlembic.v4p" systemname="VVVVAlembic" filename="F:\vvvv\work\VVVVAlembic\VVVVAlembic.v4p" scrollx="105" scrolly="-360">
    <BOUNDS type="Window" left="0" top="0" width="19620" height="12120">
    </BOUNDS>
    <PACK Name="dx11" Version="1.3.1">
    </PACK>
    <PACK Name="vvvv-Message" Version="2.9.6">
    </PACK>
-   <PACK Name="addonpack" Version="39.0.0">
+   <PACK Name="addonpack" Version="38.1.0">
    </PACK>
    <NODE systemname="Renderer (TTY)" nodename="Renderer (TTY)" componentmode="InAWindow" id="3" stayontop="1">
    <BOUNDS type="Node" left="270" top="225" width="100" height="100">
@@ -15,7 +15,7 @@
    </BOUNDS>
    <BOUNDS type="Window" left="19455" top="0" width="9000" height="5085">
    </BOUNDS>
-   <PIN pinname="Log Messages" visible="1" slicecount="1" values="0">
+   <PIN pinname="Log Messages" visible="1" slicecount="1" values="1">
    </PIN>
    <PIN pinname="Clear" slicecount="1" visible="1" values="0">
    </PIN>
@@ -181,7 +181,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="|End Time|">
    </PIN>
-   <PIN pinname="Y Input Value">
+   <PIN pinname="Y Input Value" slicecount="1" values="0">
    </PIN>
    <PIN pinname="Y Output Value" visible="1">
    </PIN>
@@ -206,38 +206,12 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="Reload">
    </PIN>
    </NODE>
-   <NODE id="32" systemname="Alembic Scene (Alembic)" filename="nodes\plugins\VVVV.Alembic.dll" nodename="Alembic Scene (Alembic)" componentmode="Hidden">
-   <BOUNDS type="Node" left="8145" top="3990" width="100" height="100">
-   </BOUNDS>
-   <BOUNDS type="Box" left="8145" top="3990" width="3000" height="3000">
-   </BOUNDS>
-   <PIN pinname="Scene Out" visible="1">
-   </PIN>
-   <PIN pinname="Filename" visible="1" slicecount="1" values="abcFile\Scene1.abc">
-   </PIN>
-   <PIN pinname="Reload" slicecount="1" visible="1" values="0">
-   </PIN>
-   <PIN pinname="End Time" visible="1">
-   </PIN>
-   <PIN pinname="Message" visible="1">
-   </PIN>
-   <PIN pinname="Names" visible="1">
-   </PIN>
-   <PIN pinname="Time" slicecount="1" visible="1" values="0">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="32" dstpinname="Reload">
-   </LINK>
-   <LINK srcnodeid="32" srcpinname="Names" dstnodeid="34" dstpinname="Input String" hiddenwhenlocked="1">
-   </LINK>
-   <LINK srcnodeid="32" srcpinname="End Time" dstnodeid="35" dstpinname="Y Input Value">
-   </LINK>
    <NODE systemname="Mesh (DX11.Geometry Alembic)" filename="nodes\plugins\VVVV.Alembic.dll" nodename="Mesh (DX11.Geometry Alembic)" componentmode="Hidden" id="37">
    <BOUNDS type="Node" left="6135" top="5355" width="100" height="100">
    </BOUNDS>
    <BOUNDS type="Box" left="6135" top="5355" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Scene In" visible="1">
+   <PIN pinname="Scene In" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="Geometry Out" visible="1">
    </PIN>
@@ -246,14 +220,6 @@
    <PIN pinname="Names" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="37" dstpinname="Scene In" linkstyle="Bezier">
-   <LINKPOINT x="8145" y="4793">
-   </LINKPOINT>
-   <LINKPOINT x="6195" y="4793">
-   </LINKPOINT>
-   </LINK>
-   <LINK srcnodeid="23" srcpinname="Y Output Value" dstnodeid="32" dstpinname="Time">
-   </LINK>
    <NODE systemname="FrameDelay (Value)" filename="%VVVV%\lib\nodes\plugins\VVVV.Nodes.dll" nodename="FrameDelay (Value)" componentmode="Hidden" id="38" hiddenwhenlocked="1">
    <BOUNDS type="Node" left="9885" top="2220" width="100" height="100">
    </BOUNDS>
@@ -271,7 +237,7 @@
    </BOUNDS>
    <BOUNDS type="Box" left="8685" top="5355" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Scene In" visible="1">
+   <PIN pinname="Scene In" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="View" visible="1">
    </PIN>
@@ -280,12 +246,6 @@
    <PIN pinname="Names" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="39" dstpinname="Scene In" linkstyle="Bezier">
-   <LINKPOINT x="8190" y="4800">
-   </LINKPOINT>
-   <LINKPOINT x="8700" y="4800">
-   </LINKPOINT>
-   </LINK>
    <LINK srcnodeid="39" srcpinname="Projection" dstnodeid="12" dstpinname="Projection" linkstyle="Bezier">
    <LINKPOINT x="8970" y="8175">
    </LINKPOINT>
@@ -317,7 +277,7 @@
    </BOUNDS>
    <BOUNDS type="Box" left="10890" top="5370" width="3000" height="3000">
    </BOUNDS>
-   <PIN pinname="Scene In" visible="1">
+   <PIN pinname="Scene In" visible="1" slicecount="1" values="||">
    </PIN>
    <PIN pinname="OutXYZ" visible="1">
    </PIN>
@@ -328,12 +288,6 @@
    <PIN pinname="Transform Out" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="57" dstpinname="Scene In" linkstyle="Bezier">
-   <LINKPOINT x="8205" y="4800">
-   </LINKPOINT>
-   <LINKPOINT x="10890" y="4800">
-   </LINKPOINT>
-   </LINK>
    <NODE systemname="SpriteBuffered (DX11.Layer)" filename="%VVVV%\packs\InstanceNoodles\nodes\modules\DX11.Layer\SpriteBuffered (DX11.Layer)\SpriteBuffered (DX11.Layer).v4p" nodename="SpriteBuffered (DX11.Layer)" componentmode="Hidden" id="58">
    <BOUNDS type="Node" left="16020" top="9255" width="100" height="100">
    </BOUNDS>
@@ -794,8 +748,6 @@
    <PIN pinname="String Type" slicecount="1" values="Filename">
    </PIN>
    </NODE>
-   <LINK srcnodeid="85" srcpinname="Output String" dstnodeid="32" dstpinname="Filename">
-   </LINK>
    <NODE nodename="IOBox (String)" componentmode="InABox" id="86" systemname="IOBox (String)">
    <BOUNDS type="Box" left="11445" top="5775" width="645" height="255">
    </BOUNDS>
@@ -828,4 +780,56 @@
    </LINK>
    <LINK srcnodeid="38" srcpinname="Output 1" dstnodeid="56" dstpinname="Input 2">
    </LINK>
+   <NODE id="32" systemname="AlembicScene (Alembic)" filename="nodes\plugins\VVVV.Alembic.dll" nodename="AlembicScene (Alembic)" componentmode="Hidden">
+   <BOUNDS type="Node" left="8145" top="3990" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="8145" top="3990" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Scene Out" visible="1">
+   </PIN>
+   <PIN pinname="Filename" visible="1" slicecount="1" values="abcFile\Scene1.abc">
+   </PIN>
+   <PIN pinname="Reload" slicecount="1" visible="1" values="0">
+   </PIN>
+   <PIN pinname="End Time" visible="1">
+   </PIN>
+   <PIN pinname="Message" visible="1">
+   </PIN>
+   <PIN pinname="Names" visible="1">
+   </PIN>
+   <PIN pinname="Time" slicecount="1" visible="1" values="0">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="36" srcpinname="Y Output Value" dstnodeid="32" dstpinname="Reload">
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="Names" dstnodeid="34" dstpinname="Input String" hiddenwhenlocked="1">
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="End Time" dstnodeid="35" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="37" dstpinname="Scene In" linkstyle="Bezier">
+   <LINKPOINT x="8145" y="4793">
+   </LINKPOINT>
+   <LINKPOINT x="6195" y="4793">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="23" srcpinname="Y Output Value" dstnodeid="32" dstpinname="Time">
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="39" dstpinname="Scene In" linkstyle="Bezier">
+   <LINKPOINT x="8190" y="4800">
+   </LINKPOINT>
+   <LINKPOINT x="8700" y="4800">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="32" srcpinname="Scene Out" dstnodeid="57" dstpinname="Scene In" linkstyle="Bezier">
+   <LINKPOINT x="8205" y="4800">
+   </LINKPOINT>
+   <LINKPOINT x="10890" y="4800">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="85" srcpinname="Output String" dstnodeid="32" dstpinname="Filename">
+   </LINK>
+   <PACK Name="dx11.particles" Version="1.0.6">
+   </PACK>
+   <PACK Name="ÎmagePack" Version="0.2.0">
+   </PACK>
    </PATCH>

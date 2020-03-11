@@ -398,10 +398,8 @@ namespace Nodes
         {
             if (FInScene[0].m_Scene->valid())
             {
-
                 size_t cnt = 0;
-                delete FOutPoints;
-                FOutPoints = gcnew Spread<ISpread<Vector3D>^>();
+                SpreadExtensions::RemoveRange(FOutPoints, 0, FOutPoints->SliceCount);
                 for each (auto curves in FInScene[0].m_Scene->getGeomIterator())
                 {
                     if (curves.m_ptr->isTypeOf(CURVES))
