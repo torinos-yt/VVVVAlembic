@@ -275,7 +275,7 @@ namespace abcr
                 Layout = Pos3Norm3Tex2Col3Vertex::Layout;
                 m_rgb = AbcGeom::IC3fGeomParam(geomParam, head.getName());
             }
-            if (AbcGeom::IC4fGeomParam::matches(head))
+            else if (AbcGeom::IC4fGeomParam::matches(head))
             {
                 hasRGBA = true;
                 vertexSize = Pos3Norm3Tex2Col4Vertex::VertexSize;
@@ -651,6 +651,8 @@ namespace abcr
                 ResourceOptionFlags::None,
                 (int)vertexSize
             );
+
+            delete this->geom;
 
             this->geom->Topology = PrimitiveTopology::TriangleList;
             this->geom->HasBoundingBox = false;
