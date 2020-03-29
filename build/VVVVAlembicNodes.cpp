@@ -458,6 +458,14 @@ namespace Nodes
         if (FInScene->IsConnected) FFirst = false;
     }
 
+    void abcr::VVVVAlembicPolyMesh::Update(DX11RenderContext^ context)
+    {
+    }
+
+    void abcr::VVVVAlembicPolyMesh::Destroy(DX11RenderContext^ context, bool force)
+    {
+    }
+
     void abcr::VVVVAlembicCamera::Evaluate(int SpreadMax)
     {
         if ((FInScene->Stream->IsChanged || FFirst) && FInScene[0].m_Scene)
