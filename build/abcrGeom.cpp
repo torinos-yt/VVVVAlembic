@@ -250,43 +250,41 @@ namespace abcr
     }
 
     PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context)
-        : abcrGeom(pmesh, context), m_polymesh(pmesh)
+        : abcrGeom(pmesh, context), m_polymesh(pmesh), hasRGB(false), hasRGBA(false)
     {
         type = POLYMESH;
-        hasRGB = false;
-        hasRGBA = false;
         setMinMaxTime(m_polymesh);
 
-        auto topo = m_polymesh.getSchema().getTopologyVariance();
+        this->vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
+        this->Layout = Pos3Norm3Tex2Vertex::Layout;
 
-        IsChangeTopo = topo == AbcGeom::MeshTopologyVariance::kHomogeneousTopology ||
-                       topo == AbcGeom::MeshTopologyVariance::kHomogenousTopology;
+        auto topo = m_polymesh.getSchema().getTopologyVariance();
+        IsChangeTopo = topo == 2;
 
         auto geomParam = m_polymesh.getSchema().getArbGeomParams();
-        size_t nParam = geomParam.getNumProperties();
-        for (size_t i = 0; i < nParam; ++i)
-        {
-            auto& head = geomParam.getPropertyHeader(i);
 
-            if (AbcGeom::IC3fGeomParam::matches(head))
-            {
-                hasRGB = true;
-                vertexSize = Pos3Norm3Tex2Col3Vertex::VertexSize;
-                Layout = Pos3Norm3Tex2Col3Vertex::Layout;
-                m_rgb = AbcGeom::IC3fGeomParam(geomParam, head.getName());
-            }
-            else if (AbcGeom::IC4fGeomParam::matches(head))
-            {
-                hasRGBA = true;
-                vertexSize = Pos3Norm3Tex2Col4Vertex::VertexSize;
-                Layout = Pos3Norm3Tex2Col4Vertex::Layout;
-                m_rgba = AbcGeom::IC4fGeomParam(geomParam, head.getName());
-            }
-        }
-        if (!hasRGB && !hasRGBA)
+        if (geomParam.valid())
         {
-            this->vertexSize = Pos3Norm3Tex2Vertex::VertexSize;
-            this->Layout = Pos3Norm3Tex2Vertex::Layout;
+            size_t nParam = geomParam.getNumProperties();
+            for (size_t i = 0; i < nParam; ++i)
+            {
+                auto& head = geomParam.getPropertyHeader(i);
+
+                if (AbcGeom::IC3fGeomParam::matches(head))
+                {
+                    hasRGB = true;
+                    vertexSize = Pos3Norm3Tex2Col3Vertex::VertexSize;
+                    Layout = Pos3Norm3Tex2Col3Vertex::Layout;
+                    m_rgb = AbcGeom::IC3fGeomParam(geomParam, head.getName());
+                }
+                else if (AbcGeom::IC4fGeomParam::matches(head))
+                {
+                    hasRGBA = true;
+                    vertexSize = Pos3Norm3Tex2Col4Vertex::VertexSize;
+                    Layout = Pos3Norm3Tex2Col4Vertex::Layout;
+                    m_rgba = AbcGeom::IC4fGeomParam(geomParam, head.getName());
+                }
+            }
         }
 
         this->geom = gcnew DX11VertexGeometry(this->m_context);
