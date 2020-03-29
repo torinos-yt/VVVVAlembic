@@ -319,27 +319,14 @@ namespace abcr
         Int32ArraySamplePtr m_faceCounts = mesh_samp.getFaceCounts();
 
         AbcGeom::IN3fGeomParam N = mesh.getNormalsParam();
-        if (N.isIndexed())
-        {
-            return;
-        }
         N3fArraySamplePtr m_norms = N.getExpandedValue(ss).getVals();
 
         bool IsIndexedUV = false;
         AbcGeom::IV2fGeomParam UV = mesh.getUVsParam();
         AbcGeom::IV2fGeomParam::Sample uvValue;
         V2fArraySamplePtr m_uvs;
-        if (UV.isIndexed())
-        {
-            IsIndexedUV = true;
-            uvValue = UV.getIndexedValue(ss);
-            m_uvs = uvValue.getVals();
-        }
-        else
-        {
-            uvValue = UV.getExpandedValue(ss);
-            m_uvs = uvValue.getVals();
-        }
+        uvValue = UV.getExpandedValue(ss);
+        m_uvs = uvValue.getVals();
 
         size_t nPts = m_points->size();
         size_t nInds = m_indices->size();
@@ -390,251 +377,123 @@ namespace abcr
             const N3f* norms = m_norms->get();
             const V2f* uvs = m_uvs->get();
             const int32_t* indices = m_indices->get();
-            if (IsIndexedUV)
+            
+            if (hasRGB)
             {
-                const auto uvInds = uvValue.getIndices()->get();
-                if (hasRGB)
+                const AbcGeom::IC3fGeomParam::Sample m_col = m_rgb.getExpandedValue(ss);
+                const C3f* cols = m_col.getVals()->get();
+                for (size_t j = 0; j < m_triangles.size(); ++j)
                 {
-                    const AbcGeom::IC3fGeomParam::Sample m_col = m_rgb.getIndexedValue(ss);
-                    const C3f* cols = m_col.getVals()->get();
-                    const auto colInds = m_col.getIndices()->get();
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
+                    tri& t = m_triangles[j];
 
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[uvInds[t[0]]];
-                        const C3f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                              abcrUtils::toSlimDX(n0) ,
-                                                              abcrUtils::toSlimDX(uv0),
-                                                              abcrUtils::toSlimDX(col0) };
+                    const V3f& v0 = points[indices[t[0]]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = uvs[t[0]];
+                    const C3f& col0 = cols[t[0]];
+                    const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
+                                                            abcrUtils::toSlimDX(n0) ,
+                                                            abcrUtils::toSlimDX(uv0),
+                                                            abcrUtils::toSlimDX(col0)};
 
-                        vertexStream->Write(p0);
+                    vertexStream->Write(p0);
 
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[uvInds[t[1]]];
-                        const C3f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                              abcrUtils::toSlimDX(n1) ,
-                                                              abcrUtils::toSlimDX(uv1),
-                                                              abcrUtils::toSlimDX(col1) };
+                    const V3f& v1 = points[indices[t[1]]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = uvs[t[1]];
+                    const C3f& col1 = cols[t[1]];
+                    const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
+                                                            abcrUtils::toSlimDX(n1) ,
+                                                            abcrUtils::toSlimDX(uv1),
+                                                            abcrUtils::toSlimDX(col1) };
 
-                        vertexStream->Write(p1);
+                    vertexStream->Write(p1);
 
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[uvInds[t[2]]];
-                        const C3f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                              abcrUtils::toSlimDX(n2) ,
-                                                              abcrUtils::toSlimDX(uv2),
-                                                              abcrUtils::toSlimDX(col2) };
+                    const V3f& v2 = points[indices[t[2]]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = uvs[t[2]];
+                    const C3f& col2 = cols[t[2]];
+                    const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
+                                                            abcrUtils::toSlimDX(n2) ,
+                                                            abcrUtils::toSlimDX(uv2),
+                                                            abcrUtils::toSlimDX(col2) };
 
-                        vertexStream->Write(p2);
-                    }
+                    vertexStream->Write(p2);
                 }
-                else if (hasRGBA)
+            }
+            else if (hasRGBA)
+            {
+                const AbcGeom::IC4fGeomParam::Sample m_col = m_rgba.getExpandedValue(ss);
+                const C4f* cols = m_col.getVals()->get();
+                for (size_t j = 0; j < m_triangles.size(); ++j)
                 {
-                    const AbcGeom::IC4fGeomParam::Sample m_col = m_rgba.getIndexedValue(ss);
-                    const C4f* cols = m_col.getVals()->get();
-                    const auto colInds = m_col.getIndices()->get();
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
+                    tri& t = m_triangles[j];
 
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[uvInds[t[0]]];
-                        const C4f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                              abcrUtils::toSlimDX(n0) ,
-                                                              abcrUtils::toSlimDX(uv0),
-                                                              abcrUtils::toSlimDX(col0) };
+                    const V3f& v0 = points[indices[t[0]]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = uvs[t[0]];
+                    const C4f& col0 = cols[t[0]];
+                    const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
+                                                            abcrUtils::toSlimDX(n0) ,
+                                                            abcrUtils::toSlimDX(uv0),
+                                                            abcrUtils::toSlimDX(col0) };
 
-                        vertexStream->Write(p0);
+                    vertexStream->Write(p0);
 
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[uvInds[t[1]]];
-                        const C4f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                              abcrUtils::toSlimDX(n1) ,
-                                                              abcrUtils::toSlimDX(uv1),
-                                                              abcrUtils::toSlimDX(col1) };
+                    const V3f& v1 = points[indices[t[1]]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = uvs[t[1]];
+                    const C4f& col1 = cols[t[1]];
+                    const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
+                                                            abcrUtils::toSlimDX(n1) ,
+                                                            abcrUtils::toSlimDX(uv1),
+                                                            abcrUtils::toSlimDX(col1) };
 
-                        vertexStream->Write(p1);
+                    vertexStream->Write(p1);
 
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[uvInds[t[2]]];
-                        const C4f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                              abcrUtils::toSlimDX(n2) ,
-                                                              abcrUtils::toSlimDX(uv2),
-                                                              abcrUtils::toSlimDX(col2) };
+                    const V3f& v2 = points[indices[t[2]]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = uvs[t[2]];
+                    const C4f& col2 = cols[t[2]];
+                    const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
+                                                            abcrUtils::toSlimDX(n2) ,
+                                                            abcrUtils::toSlimDX(uv2),
+                                                            abcrUtils::toSlimDX(col2) };
 
-                        vertexStream->Write(p2);
-                    }
-                }
-                else
-                {
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
-
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[uvInds[t[0]]];
-                        const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                          abcrUtils::toSlimDX(n0) ,
-                                                          abcrUtils::toSlimDX(uv0) };
-
-                        vertexStream->Write(p0);
-
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[uvInds[t[1]]];
-                        const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                          abcrUtils::toSlimDX(n1) ,
-                                                          abcrUtils::toSlimDX(uv1) };
-
-                        vertexStream->Write(p1);
-
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[uvInds[t[2]]];
-                        const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                          abcrUtils::toSlimDX(n2) ,
-                                                          abcrUtils::toSlimDX(uv2) };
-
-                        vertexStream->Write(p2);
-                    }
+                    vertexStream->Write(p2);
                 }
             }
             else
             {
-                if (hasRGB)
+                for (size_t j = 0; j < m_triangles.size(); ++j)
                 {
-                    const AbcGeom::IC3fGeomParam::Sample m_col = m_rgb.getIndexedValue(ss);
-                    const C3f* cols = m_col.getVals()->get();
-                    const auto colInds = m_col.getIndices()->get();
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
+                    tri& t = m_triangles[j];
 
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[t[0]];
-                        const C3f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                              abcrUtils::toSlimDX(n0) ,
-                                                              abcrUtils::toSlimDX(uv0),
-                                                              abcrUtils::toSlimDX(col0)};
+                    const V3f& v0 = points[indices[t[0]]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = uvs[t[0]];
+                    const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
+                                                        abcrUtils::toSlimDX(n0) ,
+                                                        abcrUtils::toSlimDX(uv0) };
 
-                        vertexStream->Write(p0);
+                    vertexStream->Write(p0);
 
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[t[1]];
-                        const C3f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                              abcrUtils::toSlimDX(n1) ,
-                                                              abcrUtils::toSlimDX(uv1),
-                                                              abcrUtils::toSlimDX(col1) };
+                    const V3f& v1 = points[indices[t[1]]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = uvs[t[1]];
+                    const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
+                                                        abcrUtils::toSlimDX(n1) ,
+                                                        abcrUtils::toSlimDX(uv1) };
 
-                        vertexStream->Write(p1);
+                    vertexStream->Write(p1);
 
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[t[2]];
-                        const C3f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                              abcrUtils::toSlimDX(n2) ,
-                                                              abcrUtils::toSlimDX(uv2),
-                                                              abcrUtils::toSlimDX(col2) };
+                    const V3f& v2 = points[indices[t[2]]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = uvs[t[2]];
+                    const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
+                                                        abcrUtils::toSlimDX(n2) ,
+                                                        abcrUtils::toSlimDX(uv2) };
 
-                        vertexStream->Write(p2);
-                    }
-                }
-                else if (hasRGBA)
-                {
-                    const AbcGeom::IC4fGeomParam::Sample m_col = m_rgba.getIndexedValue(ss);
-                    const C4f* cols = m_col.getVals()->get();
-                    const auto colInds = m_col.getIndices()->get();
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
-
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[t[0]];
-                        const C4f& col0 = cols[colInds[t[0]]];
-                        const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                              abcrUtils::toSlimDX(n0) ,
-                                                              abcrUtils::toSlimDX(uv0),
-                                                              abcrUtils::toSlimDX(col0) };
-
-                        vertexStream->Write(p0);
-
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[t[1]];
-                        const C4f& col1 = cols[colInds[t[1]]];
-                        const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                              abcrUtils::toSlimDX(n1) ,
-                                                              abcrUtils::toSlimDX(uv1),
-                                                              abcrUtils::toSlimDX(col1) };
-
-                        vertexStream->Write(p1);
-
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[t[2]];
-                        const C4f& col2 = cols[colInds[t[2]]];
-                        const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                              abcrUtils::toSlimDX(n2) ,
-                                                              abcrUtils::toSlimDX(uv2),
-                                                              abcrUtils::toSlimDX(col2) };
-
-                        vertexStream->Write(p2);
-                    }
-                }
-                else
-                {
-                    for (size_t j = 0; j < m_triangles.size(); ++j)
-                    {
-                        tri& t = m_triangles[j];
-
-                        const V3f& v0 = points[indices[t[0]]];
-                        const N3f& n0 = norms[t[0]];
-                        const V2f& uv0 = uvs[t[0]];
-                        const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                          abcrUtils::toSlimDX(n0) ,
-                                                          abcrUtils::toSlimDX(uv0) };
-
-                        vertexStream->Write(p0);
-
-                        const V3f& v1 = points[indices[t[1]]];
-                        const N3f& n1 = norms[t[1]];
-                        const V2f& uv1 = uvs[t[1]];
-                        const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                          abcrUtils::toSlimDX(n1) ,
-                                                          abcrUtils::toSlimDX(uv1) };
-
-                        vertexStream->Write(p1);
-
-                        const V3f& v2 = points[indices[t[2]]];
-                        const N3f& n2 = norms[t[2]];
-                        const V2f& uv2 = uvs[t[2]];
-                        const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                          abcrUtils::toSlimDX(n2) ,
-                                                          abcrUtils::toSlimDX(uv2) };
-
-                        vertexStream->Write(p2);
-                    }
+                    vertexStream->Write(p2);
                 }
             }
             vertexStream->Position = 0;
