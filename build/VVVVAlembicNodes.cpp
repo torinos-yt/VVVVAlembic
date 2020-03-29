@@ -368,15 +368,18 @@ namespace Nodes
         {
             if (FInScene[0].m_Scene->valid())
             {
-
                 size_t cnt = 0;
+                SpreadExtensions::RemoveRange(FOutPoints, 0, FOutPoints->SliceCount);
+                SpreadExtensions::RemoveRange(FOutMat, 0, FOutMat->SliceCount);
+                SpreadExtensions::RemoveRange(FNames, 0, FNames->SliceCount);
                 for each (auto pts in FInScene[0].m_Scene->getGeomIterator())
                 {
                     if (pts.m_ptr->isTypeOf(POINTS))
                     {
-                        FOutMat[cnt] = pts.m_ptr->getTransform();
-                        FNames[cnt] = pts.m_ptr->getName();
+                        SpreadExtensions::Add(FOutMat, pts.m_ptr->getTransform());
+                        SpreadExtensions::Add(FNames, pts.m_ptr->getName());
 
+                        SpreadExtensions::Add(FOutPoints, static_cast<ISpread<Vector3D>^>(gcnew Spread<Vector3D>()));
                         pts.m_ptr->get(FOutPoints[cnt++]);
 
                     }
@@ -400,13 +403,15 @@ namespace Nodes
             {
                 size_t cnt = 0;
                 SpreadExtensions::RemoveRange(FOutPoints, 0, FOutPoints->SliceCount);
+                SpreadExtensions::RemoveRange(FOutMat, 0, FOutMat->SliceCount);
+                SpreadExtensions::RemoveRange(FNames, 0, FNames->SliceCount);
                 for each (auto curves in FInScene[0].m_Scene->getGeomIterator())
                 {
                     if (curves.m_ptr->isTypeOf(CURVES))
                     {
-                        FOutMat[cnt] = curves.m_ptr->getTransform();
-                        FNames[cnt] = curves.m_ptr->getName();
-                        FOutCnt[cnt] = ((Curves*)curves.m_ptr)->getCurveCount();
+                        SpreadExtensions::Add(FOutMat, curves.m_ptr->getTransform());
+                        SpreadExtensions::Add(FNames, curves.m_ptr->getName());
+                        SpreadExtensions::Add(FOutCnt, ((Curves*)curves.m_ptr)->getCurveCount());
 
                         curves.m_ptr->get(FOutPoints);
 
@@ -431,6 +436,12 @@ namespace Nodes
         {
             if (FInScene[0].m_Scene->valid())
             {
+                if (FOutGeo->SliceCount == 0)
+                {
+                    FOutGeo = gcnew Spread<DX11Resource<DX11VertexGeometry^>^>();
+                    FOutMat = gcnew Spread<Matrix4x4>();
+                    FNames = gcnew Spread<String^>();
+                }
 
                 size_t cnt = 0;
                 for each (auto geom in FInScene[0].m_Scene->getGeomIterator())
@@ -472,18 +483,23 @@ namespace Nodes
         {
             if (FInScene[0].m_Scene->valid())
             {
+
+
                 size_t cnt = 0;
+                SpreadExtensions::RemoveRange(FOutView, 0, FOutView->SliceCount);
+                SpreadExtensions::RemoveRange(FOutProj, 0, FOutProj->SliceCount);
+                SpreadExtensions::RemoveRange(FNames, 0, FNames->SliceCount);
                 for each (auto cam in FInScene[0].m_Scene->getGeomIterator())
                 {
                     if (cam.m_ptr->isTypeOf(CAMERA))
                     {
                         ViewProj VP;
 
-                        FNames[cnt] = cam.m_ptr->getName();
+                        SpreadExtensions::Add(FNames, cam.m_ptr->getName());
 
                         cam.m_ptr->get(VP);
-                        FOutView[cnt] = VP.View;
-                        FOutProj[cnt] = VP.Proj;
+                        SpreadExtensions::Add(FOutView, VP.View);
+                        SpreadExtensions::Add(FOutProj, VP.Proj);
 
                         cnt++;
                     }
