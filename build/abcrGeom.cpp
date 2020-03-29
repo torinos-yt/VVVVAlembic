@@ -389,33 +389,33 @@ namespace abcr
                     const V3f& v0 = points[indices[t[0]]];
                     const N3f& n0 = norms[t[0]];
                     const V2f& uv0 = uvs[t[0]];
-                    const C3f& col0 = cols[t[0]];
+                    const C3f& col0 = m_col.isIndexed()? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                            abcrUtils::toSlimDX(n0) ,
-                                                            abcrUtils::toSlimDX(uv0),
-                                                            abcrUtils::toSlimDX(col0)};
+                                                          abcrUtils::toSlimDX(n0) ,
+                                                          abcrUtils::toSlimDX(uv0),
+                                                          abcrUtils::toSlimDX(col0)};
 
                     vertexStream->Write(p0);
 
                     const V3f& v1 = points[indices[t[1]]];
                     const N3f& n1 = norms[t[1]];
                     const V2f& uv1 = uvs[t[1]];
-                    const C3f& col1 = cols[t[1]];
+                    const C3f& col1 = m_col.isIndexed() ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                            abcrUtils::toSlimDX(n1) ,
-                                                            abcrUtils::toSlimDX(uv1),
-                                                            abcrUtils::toSlimDX(col1) };
+                                                          abcrUtils::toSlimDX(n1) ,
+                                                          abcrUtils::toSlimDX(uv1),
+                                                          abcrUtils::toSlimDX(col1) };
 
                     vertexStream->Write(p1);
 
                     const V3f& v2 = points[indices[t[2]]];
                     const N3f& n2 = norms[t[2]];
                     const V2f& uv2 = uvs[t[2]];
-                    const C3f& col2 = cols[t[2]];
+                    const C3f& col2 = m_col.isIndexed() ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                            abcrUtils::toSlimDX(n2) ,
-                                                            abcrUtils::toSlimDX(uv2),
-                                                            abcrUtils::toSlimDX(col2) };
+                                                          abcrUtils::toSlimDX(n2) ,
+                                                          abcrUtils::toSlimDX(uv2),
+                                                          abcrUtils::toSlimDX(col2) };
 
                     vertexStream->Write(p2);
                 }
@@ -431,33 +431,33 @@ namespace abcr
                     const V3f& v0 = points[indices[t[0]]];
                     const N3f& n0 = norms[t[0]];
                     const V2f& uv0 = uvs[t[0]];
-                    const C4f& col0 = cols[t[0]];
+                    const C4f& col0 = m_col.isIndexed() ? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                            abcrUtils::toSlimDX(n0) ,
-                                                            abcrUtils::toSlimDX(uv0),
-                                                            abcrUtils::toSlimDX(col0) };
+                                                          abcrUtils::toSlimDX(n0) ,
+                                                          abcrUtils::toSlimDX(uv0),
+                                                          abcrUtils::toSlimDX(col0) };
 
                     vertexStream->Write(p0);
 
                     const V3f& v1 = points[indices[t[1]]];
                     const N3f& n1 = norms[t[1]];
                     const V2f& uv1 = uvs[t[1]];
-                    const C4f& col1 = cols[t[1]];
+                    const C4f& col1 = m_col.isIndexed() ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                            abcrUtils::toSlimDX(n1) ,
-                                                            abcrUtils::toSlimDX(uv1),
-                                                            abcrUtils::toSlimDX(col1) };
+                                                          abcrUtils::toSlimDX(n1) ,
+                                                          abcrUtils::toSlimDX(uv1),
+                                                          abcrUtils::toSlimDX(col1) };
 
                     vertexStream->Write(p1);
 
                     const V3f& v2 = points[indices[t[2]]];
                     const N3f& n2 = norms[t[2]];
                     const V2f& uv2 = uvs[t[2]];
-                    const C4f& col2 = cols[t[2]];
+                    const C4f& col2 = m_col.isIndexed() ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                            abcrUtils::toSlimDX(n2) ,
-                                                            abcrUtils::toSlimDX(uv2),
-                                                            abcrUtils::toSlimDX(col2) };
+                                                          abcrUtils::toSlimDX(n2) ,
+                                                          abcrUtils::toSlimDX(uv2),
+                                                          abcrUtils::toSlimDX(col2) };
 
                     vertexStream->Write(p2);
                 }
@@ -472,8 +472,8 @@ namespace abcr
                     const N3f& n0 = norms[t[0]];
                     const V2f& uv0 = uvs[t[0]];
                     const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
-                                                        abcrUtils::toSlimDX(n0) ,
-                                                        abcrUtils::toSlimDX(uv0) };
+                                                      abcrUtils::toSlimDX(n0) ,
+                                                      abcrUtils::toSlimDX(uv0) };
 
                     vertexStream->Write(p0);
 
@@ -481,8 +481,8 @@ namespace abcr
                     const N3f& n1 = norms[t[1]];
                     const V2f& uv1 = uvs[t[1]];
                     const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
-                                                        abcrUtils::toSlimDX(n1) ,
-                                                        abcrUtils::toSlimDX(uv1) };
+                                                      abcrUtils::toSlimDX(n1) ,
+                                                      abcrUtils::toSlimDX(uv1) };
 
                     vertexStream->Write(p1);
 
@@ -490,8 +490,8 @@ namespace abcr
                     const N3f& n2 = norms[t[2]];
                     const V2f& uv2 = uvs[t[2]];
                     const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
-                                                        abcrUtils::toSlimDX(n2) ,
-                                                        abcrUtils::toSlimDX(uv2) };
+                                                      abcrUtils::toSlimDX(n2) ,
+                                                      abcrUtils::toSlimDX(uv2) };
 
                     vertexStream->Write(p2);
                 }
