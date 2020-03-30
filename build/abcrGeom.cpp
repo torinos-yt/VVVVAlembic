@@ -371,7 +371,7 @@ namespace abcr
                 }
             }
         }
-
+        void *buffer;
         auto vertexStream = gcnew SlimDX::DataStream(m_triangles.size() * 3 * vertexSize, true, true);
         vertexStream->Position = 0;
 
@@ -559,8 +559,6 @@ namespace abcr
             float Near = std::max(cam_samp.getNearClippingPlane(), .001);
             float Far = std::min(cam_samp.getFarClippingPlane(), 100000.0);
             float ForcalLength = cam_samp.getFocalLength();
-            System::Diagnostics::Debug::WriteLine("Far " + Far);
-            System::Diagnostics::Debug::WriteLine("Near " + Near);
             float FoV = 2.0 * (atan(Aperture * 10.0 / (2.0 * ForcalLength))) * VMath::RadToDeg;
 
             this->VP.Proj = VMath::PerspectiveLH(FoV * VMath::DegToCyc, Near, Far, 1.0);
