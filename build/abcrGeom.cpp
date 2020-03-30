@@ -325,8 +325,10 @@ namespace abcr
         AbcGeom::IV2fGeomParam UV = mesh.getUVsParam();
         AbcGeom::IV2fGeomParam::Sample uvValue;
         V2fArraySamplePtr m_uvs;
-        uvValue = UV.getIndexedValue(ss);
+        uvValue = UV.getExpandedValue(ss);
         m_uvs = uvValue.getVals();
+        scope = UV.getScope();
+        bool isIndexedUV = scope == AbcGeom::kVertexScope || scope == AbcGeom::kVaryingScope;
 
         size_t nPts = m_points->size();
         size_t nInds = m_indices->size();
@@ -339,6 +341,7 @@ namespace abcr
         using tri = Imath::Vec3<unsigned int>;
         using triArray = std::vector<tri>;
         triArray m_triangles;
+        std::vector<int32_t> inds;
 
         {
             size_t fBegin = 0;
@@ -383,14 +386,16 @@ namespace abcr
             {
                 const AbcGeom::IC3fGeomParam::Sample m_col = m_rgb.getExpandedValue(ss);
                 const C3f* cols = m_col.getVals()->get();
+                auto scope = m_col.getScope();
+                bool isIndexedColor = scope == AbcGeom::kVertexScope || scope == AbcGeom::kVaryingScope;
                 for (size_t j = 0; j < m_triangles.size(); ++j)
                 {
                     tri& t = m_triangles[j];
 
                     const V3f& v0 = points[indices[t[0]]];
                     const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = UV.isIndexed() ? uvs[uvInds[t[0]]] : uvs[t[0]];
-                    const C3f& col0 = m_col.isIndexed()? cols[indices[t[0]]] : cols[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
+                    const C3f& col0 = isIndexedColor ? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                           abcrUtils::toSlimDX(n0) ,
                                                           abcrUtils::toSlimDX(uv0),
@@ -400,8 +405,8 @@ namespace abcr
 
                     const V3f& v1 = points[indices[t[1]]];
                     const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = UV.isIndexed() ? uvs[uvInds[t[1]]] : uvs[t[1]];
-                    const C3f& col1 = m_col.isIndexed() ? cols[indices[t[1]]] : cols[t[1]];
+                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[1]];
+                    const C3f& col1 = isIndexedColor ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                           abcrUtils::toSlimDX(n1) ,
                                                           abcrUtils::toSlimDX(uv1),
@@ -411,8 +416,8 @@ namespace abcr
 
                     const V3f& v2 = points[indices[t[2]]];
                     const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = UV.isIndexed() ? uvs[uvInds[t[2]]] : uvs[t[2]];
-                    const C3f& col2 = m_col.isIndexed() ? cols[indices[t[2]]] : cols[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
+                    const C3f& col2 = isIndexedColor ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                           abcrUtils::toSlimDX(n2) ,
                                                           abcrUtils::toSlimDX(uv2),
@@ -425,14 +430,16 @@ namespace abcr
             {
                 const AbcGeom::IC4fGeomParam::Sample m_col = m_rgba.getExpandedValue(ss);
                 const C4f* cols = m_col.getVals()->get();
+                auto scope = m_col.getScope();
+                bool isIndexedColor = scope == AbcGeom::kVertexScope || scope == AbcGeom::kVaryingScope;
                 for (size_t j = 0; j < m_triangles.size(); ++j)
                 {
                     tri& t = m_triangles[j];
 
                     const V3f& v0 = points[indices[t[0]]];
                     const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = UV.isIndexed() ? uvs[uvInds[t[0]]] : uvs[t[0]];
-                    const C4f& col0 = m_col.isIndexed() ? cols[indices[t[0]]] : cols[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
+                    const C4f& col0 = isIndexedColor ? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                           abcrUtils::toSlimDX(n0) ,
                                                           abcrUtils::toSlimDX(uv0),
@@ -442,8 +449,8 @@ namespace abcr
 
                     const V3f& v1 = points[indices[t[1]]];
                     const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = UV.isIndexed() ? uvs[uvInds[t[1]]] : uvs[t[1]];
-                    const C4f& col1 = m_col.isIndexed() ? cols[indices[t[1]]] : cols[t[1]];
+                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[1]];
+                    const C4f& col1 = isIndexedColor ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                           abcrUtils::toSlimDX(n1) ,
                                                           abcrUtils::toSlimDX(uv1),
@@ -453,8 +460,8 @@ namespace abcr
 
                     const V3f& v2 = points[indices[t[2]]];
                     const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = UV.isIndexed() ? uvs[uvInds[t[2]]] : uvs[t[2]];
-                    const C4f& col2 = m_col.isIndexed() ? cols[indices[t[2]]] : cols[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
+                    const C4f& col2 = isIndexedColor ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                           abcrUtils::toSlimDX(n2) ,
                                                           abcrUtils::toSlimDX(uv2),
@@ -471,7 +478,7 @@ namespace abcr
 
                     const V3f& v0 = points[indices[t[0]]];
                     const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = UV.isIndexed() ? uvs[uvInds[t[0]]] : uvs[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
                     const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                       abcrUtils::toSlimDX(n0) ,
                                                       abcrUtils::toSlimDX(uv0) };
@@ -480,7 +487,7 @@ namespace abcr
 
                     const V3f& v1 = points[indices[t[1]]];
                     const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = UV.isIndexed() ? uvs[uvInds[t[1]]] : uvs[t[2]];
+                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[2]];
                     const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                       abcrUtils::toSlimDX(n1) ,
                                                       abcrUtils::toSlimDX(uv1) };
@@ -489,7 +496,7 @@ namespace abcr
 
                     const V3f& v2 = points[indices[t[2]]];
                     const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = UV.isIndexed() ? uvs[uvInds[t[2]]] : uvs[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
                     const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                       abcrUtils::toSlimDX(n2) ,
                                                       abcrUtils::toSlimDX(uv2) };
@@ -549,10 +556,11 @@ namespace abcr
             camSchema.get(cam_samp);
 
             float Aperture = cam_samp.getVerticalAperture();
-            float Near = cam_samp.getNearClippingPlane();
-            float Far = cam_samp.getFarClippingPlane();
+            float Near = std::max(cam_samp.getNearClippingPlane(), .001);
+            float Far = std::min(cam_samp.getFarClippingPlane(), 100000.0);
             float ForcalLength = cam_samp.getFocalLength();
-
+            System::Diagnostics::Debug::WriteLine("Far " + Far);
+            System::Diagnostics::Debug::WriteLine("Near " + Near);
             float FoV = 2.0 * (atan(Aperture * 10.0 / (2.0 * ForcalLength))) * VMath::RadToDeg;
 
             this->VP.Proj = VMath::PerspectiveLH(FoV * VMath::DegToCyc, Near, Far, 1.0);
