@@ -93,8 +93,7 @@ namespace abcr
     void abcrGeom::setMinMaxTime(T& obj)
     {
         TimeSamplingPtr tptr = obj.getSchema().getTimeSampling();
-        constant = obj.getSchema().isConstant();
-        if (!constant)
+        if (!obj.getSchema().isConstant())
         {
             size_t nSamples = obj.getSchema().getNumSamples();
             if (nSamples > 0)
@@ -540,24 +539,26 @@ namespace abcr
 
     void Camera::set(chrono_t time, Imath::M44f& transform)
     {
-        if (this->constant) time = m_minTime;
+        if (!this->constant)
+        {
+            ISampleSelector ss(time, ISampleSelector::kNearIndex);
 
-        ISampleSelector ss(time, ISampleSelector::kNearIndex);
-        
-        AbcGeom::CameraSample cam_samp;
-        AbcGeom::ICameraSchema camSchema = m_camera.getSchema();
+            AbcGeom::CameraSample cam_samp;
+            AbcGeom::ICameraSchema camSchema = m_camera.getSchema();
 
-        camSchema.get(cam_samp);
+            camSchema.get(cam_samp);
 
-        float Aperture = cam_samp.getVerticalAperture();
-        float Near = cam_samp.getNearClippingPlane();
-        float Far = cam_samp.getFarClippingPlane();
-        float ForcalLength = cam_samp.getFocalLength();
+            float Aperture = cam_samp.getVerticalAperture();
+            float Near = cam_samp.getNearClippingPlane();
+            float Far = cam_samp.getFarClippingPlane();
+            float ForcalLength = cam_samp.getFocalLength();
 
-        float FoV = 2.0 * ( atan(Aperture * 10.0 / (2.0 * ForcalLength)) ) * VMath::RadToDeg;
+            float FoV = 2.0 * (atan(Aperture * 10.0 / (2.0 * ForcalLength))) * VMath::RadToDeg;
 
-        this->VP = ViewProj(VMath::Inverse(VMath::RotateY(VMath::Pi) * abcrUtils::toVVVV(transform)),
-                            VMath::PerspectiveLH(FoV*VMath::DegToCyc, Near, Far, 1.0));
+            this->VP.Proj = VMath::PerspectiveLH(FoV * VMath::DegToCyc, Near, Far, 1.0);
+        }
+
+        this->VP.View = VMath::Inverse(VMath::RotateY(VMath::Pi) * abcrUtils::toVVVV(transform));
     }
     
 }
