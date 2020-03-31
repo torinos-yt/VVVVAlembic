@@ -349,7 +349,7 @@ namespace Nodes
             {
                 try
                 {
-                    if(FOutScene[0].m_Scene->updateSample(((ISpread<float>^)FTime)[0]))
+                    if(FOutScene[0].m_Scene->updateSample((chrono_t)(((ISpread<float>^)FTime)[0])))
                         FOutScene->Stream->IsChanged = true;
                 }
                 catch (Alembic::Util::Exception e)

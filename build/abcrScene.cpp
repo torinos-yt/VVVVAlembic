@@ -44,7 +44,7 @@ namespace abcr
         return true;
     }
 
-    bool abcrScene::updateSample(float time)
+    bool abcrScene::updateSample(chrono_t time)
     {
         if (!m_top) return false;
 

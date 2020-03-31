@@ -33,7 +33,7 @@ namespace abcr
 
             bool open(const string& path, DX11RenderContext^ context);
 
-            bool updateSample(float time);
+            bool updateSample(chrono_t time);
 
             bool valid() const { return m_top->valid(); };
 
