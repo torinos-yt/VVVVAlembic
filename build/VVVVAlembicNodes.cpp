@@ -405,6 +405,7 @@ namespace Nodes
                 SpreadExtensions::RemoveRange(FOutPoints, 0, FOutPoints->SliceCount);
                 SpreadExtensions::RemoveRange(FOutMat, 0, FOutMat->SliceCount);
                 SpreadExtensions::RemoveRange(FNames, 0, FNames->SliceCount);
+                SpreadExtensions::RemoveRange(FOutCnt, 0, FOutCnt->SliceCount);
                 for each (auto curves in FInScene[0].m_Scene->getGeomIterator())
                 {
                     if (curves.m_ptr->isTypeOf(CURVES))
@@ -414,11 +415,9 @@ namespace Nodes
                         SpreadExtensions::Add(FOutCnt, ((Curves*)curves.m_ptr)->getCurveCount());
 
                         curves.m_ptr->get(FOutPoints);
-
+                        cnt++;
                     }
                 }
-
-                FOutPoints->SliceCount = cnt;
                 FOutMat->SliceCount = cnt;
                 FNames->SliceCount = cnt;
 

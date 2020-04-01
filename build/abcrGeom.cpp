@@ -220,10 +220,9 @@ namespace abcr
         size_t nCurves = curve_sample.getNumCurves();
         const V3f* src = m_positions->get();
 
-        
         if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) == nullptr)
         {
-            curves = gcnew Spread<ISpread<Vector3D>^>(nCurves);
+            this->curves = gcnew Spread<ISpread<Vector3D>^>(nCurves);
         }
         else
         {
@@ -371,7 +370,7 @@ namespace abcr
                 }
             }
         }
-        void *buffer;
+
         auto vertexStream = gcnew SlimDX::DataStream(m_triangles.size() * 3 * vertexSize, true, true);
         vertexStream->Position = 0;
 
