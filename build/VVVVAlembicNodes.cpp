@@ -416,9 +416,8 @@ namespace Nodes
                         SpreadExtensions::Add(FNames, curves.m_ptr->getName());
                         SpreadExtensions::Add(FOutCnt, ((Curves*)curves.m_ptr)->getCurveCount());
 
-                        SpreadExtensions::AddRange(FOutIndex, ((Curves*)curves.m_ptr)->getIndexSpread());
-
                         curves.m_ptr->get(FOutPoints);
+                        ((Curves*)curves.m_ptr)->getIndexSpread(FOutIndex);
                         cnt++;
                     }
                 }

@@ -207,7 +207,10 @@ namespace abcr
 
         const char* getTypeNmae() const { return "Curves"; }
         int getCurveCount() const { return this->curves->SliceCount; }
-        ISpread<int>^ getIndexSpread() const { return this->index; }
+        inline void getIndexSpread(ISpread<int>^% o) const 
+        {
+            SpreadExtensions::AddRange(o, static_cast<ISpread<int>^>(this->index));
+        }
 
         void set(chrono_t time, Imath::M44f& transform) override;
 

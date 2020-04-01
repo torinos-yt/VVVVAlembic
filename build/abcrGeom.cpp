@@ -237,7 +237,7 @@ namespace abcr
             this->curves->SliceCount = nCurves;
         }
 
-        this->index = gcnew Spread<int>(nPts);
+        auto index = gcnew Spread<int>(nPts);
 
         int cnt = 0;
         for (size_t i = 0; i < nCurves; ++i)
@@ -251,13 +251,14 @@ namespace abcr
                 cp[j] = abcrUtils::toVVVV(v);
                 src++;
 
-                static_cast<ISpread<int>^>(this->index)[cnt++] = (int)(j == (num-1));
+                index[cnt++] = 0;
             }
+            index[cnt - 1] = 1;
 
             static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves)[i] = cp;
         }
 
-
+        this->index = index;
         this->index->SliceCount = cnt;
     }
 
