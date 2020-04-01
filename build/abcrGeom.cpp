@@ -220,20 +220,27 @@ namespace abcr
         size_t nCurves = curve_sample.getNumCurves();
         const V3f* src = m_positions->get();
 
+        const Alembic::Util::int32_t* nVertices = curve_sample.getCurvesNumVertices()->get();
+
+        size_t nPts = 0;
+        for (size_t i = 0; i < nCurves; ++i)
+        {
+            nPts += nVertices[i];
+        }
+
         if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) == nullptr)
         {
             this->curves = gcnew Spread<ISpread<Vector3D>^>(nCurves);
-            this->index = gcnew Spread<int>(100000);
         }
         else
         {
             this->curves->SliceCount = nCurves;
         }
 
-        const Alembic::Util::int32_t* nVertices = curve_sample.getCurvesNumVertices()->get();
+        this->index = gcnew Spread<int>(nPts);
 
         int cnt = 0;
-        for (int i = 0; i < nCurves; ++i)
+        for (size_t i = 0; i < nCurves; ++i)
         {
             const int num = nVertices[i];
             ISpread<Vector3D>^ cp = gcnew Spread<Vector3D>(num);
