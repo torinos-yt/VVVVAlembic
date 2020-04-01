@@ -223,6 +223,7 @@ namespace abcr
         if (static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves) == nullptr)
         {
             this->curves = gcnew Spread<ISpread<Vector3D>^>(nCurves);
+            this->index = gcnew Spread<int>(100000);
         }
         else
         {
@@ -231,6 +232,7 @@ namespace abcr
 
         const Alembic::Util::int32_t* nVertices = curve_sample.getCurvesNumVertices()->get();
 
+        int cnt = 0;
         for (int i = 0; i < nCurves; ++i)
         {
             const int num = nVertices[i];
@@ -241,10 +243,15 @@ namespace abcr
                 const V3f& v = *src;
                 cp[j] = abcrUtils::toVVVV(v);
                 src++;
+
+                static_cast<ISpread<int>^>(this->index)[cnt++] = (int)(j == (num-1));
             }
 
             static_cast<ISpread<ISpread<Vector3D>^>^>(this->curves)[i] = cp;
         }
+
+
+        this->index->SliceCount = cnt;
     }
 
     PolyMesh::PolyMesh(AbcGeom::IPolyMesh pmesh, DX11RenderContext^ context)

@@ -814,4 +814,24 @@
    </LINK>
    <LINK srcnodeid="98" srcpinname="Projection" dstnodeid="63" dstpinname="Projection">
    </LINK>
+   <NODE systemname="AlembicScene (Alembic)" filename="%VVVV%\packs\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll" nodename="AlembicScene (Alembic)" componentmode="Hidden" id="99">
+   <BOUNDS type="Node" left="5760" top="2400" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5760" top="2400" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Filename" slicecount="1" values="C:\Users\iryut\Desktop\curve.abc">
+   </PIN>
+   <PIN pinname="Scene Out" visible="1">
+   </PIN>
+   </NODE>
+   <NODE systemname="Curve (3D Alembic)" filename="%VVVV%\packs\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll" nodename="Curve (3D Alembic)" componentmode="Hidden" id="100">
+   <BOUNDS type="Node" left="5745" top="2955" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5745" top="2955" width="3000" height="3000">
+   </BOUNDS>
+   <PIN pinname="Scene In" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="99" srcpinname="Scene Out" dstnodeid="100" dstpinname="Scene In">
+   </LINK>
    </PATCH>

@@ -1,0 +1,58 @@
+StructuredBuffer<float3> inputBuffer;
+StructuredBuffer<uint> breakBuffer;
+
+SamplerState linearSampler: IMMUTABLE
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+struct vs2gs
+{
+    uint vid : TEXCOORD0;
+};
+
+struct gsout
+{
+	float3 pos : POSITION;
+	float2 uv : TEXCOORD1;
+};
+
+vs2gs VS(uint vid : SV_VertexID)
+{	
+	vs2gs o;
+	o.vid = vid;
+    return o;
+}
+
+[maxvertexcount(2)]
+void GS_Line(point vs2gs input[1], inout LineStream<gsout> outStream)
+{	
+	uint vid = input[0].vid;
+	if(breakBuffer[vid]) return;
+	
+	gsout o;
+	o.pos = inputBuffer[vid];
+	o.uv = float2(0,0);
+	outStream.Append(o);
+	
+	gsout o2;
+	o2.pos = inputBuffer[vid + 1];
+	o2.uv = float2(1,0);
+	outStream.Append(o2);
+	
+	outStream.RestartStrip();
+}
+
+GeometryShader StreamOutGS = ConstructGSWithSO( CompileShader( gs_4_0, GS_Line() ), "POSITION.xyz;TEXCOORD1.xy", NULL,NULL,NULL,-1 );
+
+technique10 LineCurve
+{
+    pass P0
+    {
+        SetVertexShader( CompileShader( vs_4_0, VS() ) );
+    	SetGeometryShader( CompileShader( gs_4_0, GS_Line() ) );
+        SetGeometryShader( StreamOutGS );
+    }  
+}

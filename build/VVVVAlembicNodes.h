@@ -177,10 +177,13 @@ namespace abcr
         [Output("Curve Count", Order = 2)]
         ISpread<int>^ FOutCnt;
 
-        [Output("Transform Out", Order = 3)]
+        [Output("End Point", Order = 3, Visibility = PinVisibility::OnlyInspector)]
+        ISpread<int>^ FOutIndex;
+
+        [Output("Transform Out", Order = 4)]
         ISpread<Matrix4x4>^ FOutMat;
 
-        [Output("Names", Order = 4)]
+        [Output("Names", Order = 5)]
         ISpread<String^>^ FNames;
 
         [Import()]

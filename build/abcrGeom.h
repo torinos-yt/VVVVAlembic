@@ -194,6 +194,7 @@ namespace abcr
     {
     public:
 
+        gcroot<ISpread<int>^> index;
         gcroot<ISpread<ISpread<Vector3D>^>^> curves;
 
         Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
@@ -206,6 +207,7 @@ namespace abcr
 
         const char* getTypeNmae() const { return "Curves"; }
         int getCurveCount() const { return this->curves->SliceCount; }
+        ISpread<int>^ getIndexSpread() const { return this->index; }
 
         void set(chrono_t time, Imath::M44f& transform) override;
 
