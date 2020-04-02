@@ -194,7 +194,7 @@ namespace abcr
     {
     public:
 
-        gcroot<ISpread<int>^> index;
+        gcroot<ISpread<float>^> index;
         gcroot<ISpread<ISpread<Vector3D>^>^> curves;
 
         Curves(AbcGeom::ICurves curves, DX11RenderContext^ context);
@@ -207,9 +207,9 @@ namespace abcr
 
         const char* getTypeNmae() const { return "Curves"; }
         int getCurveCount() const { return this->curves->SliceCount; }
-        inline void getIndexSpread(ISpread<int>^% o) const 
+        inline void getIndexSpread(ISpread<float>^% o) const 
         {
-            SpreadExtensions::AddRange(o, static_cast<ISpread<int>^>(this->index));
+            SpreadExtensions::AddRange(o, static_cast<ISpread<float>^>(this->index));
         }
 
         void set(chrono_t time, Imath::M44f& transform) override;

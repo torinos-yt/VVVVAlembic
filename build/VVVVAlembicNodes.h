@@ -178,7 +178,7 @@ namespace abcr
         ISpread<int>^ FOutCnt;
 
         [Output("End Point", Order = 3, Visibility = PinVisibility::OnlyInspector)]
-        ISpread<int>^ FOutIndex;
+        ISpread<float>^ FOutIndex;
 
         [Output("Transform Out", Order = 4)]
         ISpread<Matrix4x4>^ FOutMat;

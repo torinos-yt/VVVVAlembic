@@ -1,5 +1,11 @@
+#if !defined(DIVIDE)
+	#define DIVIDE 4
+#endif
+
 StructuredBuffer<float3> inputBuffer;
-StructuredBuffer<uint> breakBuffer;
+StructuredBuffer<float> breakBuffer;
+
+float width<string uiname = "Width"; float uimin = 0.0;> = .5;
 
 SamplerState linearSampler: IMMUTABLE
 {
@@ -7,6 +13,8 @@ SamplerState linearSampler: IMMUTABLE
     AddressU = Wrap;
     AddressV = Wrap;
 };
+
+#define TWO_PI 6.28318530718
 
 struct vs2gs
 {
@@ -19,6 +27,13 @@ struct gsout
 	float2 uv : TEXCOORD1;
 };
 
+struct gstube
+{
+	float3 pos : POSITION;
+	float3 norm: NORMAL;
+	float2 uv : TEXCOORD1;
+};
+
 vs2gs VS(uint vid : SV_VertexID)
 {	
 	vs2gs o;
@@ -26,26 +41,114 @@ vs2gs VS(uint vid : SV_VertexID)
     return o;
 }
 
+float3x3 rot3D(float3 axis, float angle)
+{
+    float c, s;
+    sincos(angle, s, c);
+
+    float t = 1 - c;
+    float x = axis.x;
+    float y = axis.y;
+    float z = axis.z;
+
+    return float3x3(
+        t * x * x + c,      t * x * y - s * z,  t * x * z + s * y,
+        t * x * y + s * z,  t * y * y + c,      t * y * z - s * x,
+        t * x * z - s * y,  t * y * z + s * x,  t * z * z + c
+    );
+}
+
 [maxvertexcount(2)]
 void GS_Line(point vs2gs input[1], inout LineStream<gsout> outStream)
 {	
 	uint vid = input[0].vid;
-	if(breakBuffer[vid]) return;
+	bool isBreak = breakBuffer[vid] == 1;
+	if(isBreak) return;
 	
 	gsout o;
 	o.pos = inputBuffer[vid];
-	o.uv = float2(0,0);
+	o.uv = float2(breakBuffer[vid],0);
 	outStream.Append(o);
 	
 	gsout o2;
 	o2.pos = inputBuffer[vid + 1];
-	o2.uv = float2(1,0);
+	o2.uv = float2(breakBuffer[vid + 1],0);
 	outStream.Append(o2);
 	
 	outStream.RestartStrip();
 }
 
-GeometryShader StreamOutGS = ConstructGSWithSO( CompileShader( gs_4_0, GS_Line() ), "POSITION.xyz;TEXCOORD1.xy", NULL,NULL,NULL,-1 );
+[maxvertexcount(DIVIDE*4)]
+void GS_Tube(point vs2gs input[1], inout TriangleStream<gstube> outStream)
+{
+	uint vid = input[0].vid;
+	bool isBreak = breakBuffer[vid] == 1;
+	if(isBreak) return;
+	
+	uint size, d;
+	inputBuffer.GetDimensions(size, d);
+	
+	uint previd = max(vid - 1, 0);
+	uint nextid = vid + 1;
+	uint nnid = min(nextid + 1, size);
+	
+	gstube output0, output1, output2, output3;
+	
+	float3 pos = inputBuffer[vid];
+	float3 posNext = inputBuffer[nextid];
+	
+	float3 posPrev = inputBuffer[lerp(previd, vid, breakBuffer[previd] == 1)];
+	float3 posNext2 = inputBuffer[lerp(nnid, nextid, breakBuffer[nextid] == 1)];
+	
+	float3 dir = normalize(posNext - posPrev);
+	float3 dirNext = normalize(posNext2 - pos);
+	float3 up = float3(0,1,0);
+	
+	float3 xDir = normalize(cross(up, dir));
+	float3 yDir = normalize(cross(xDir, dir));
+	float3 xDirNext = normalize(cross(up, dirNext));
+	float3 yDirNext = normalize(cross(xDirNext, dirNext));
+	
+	float divrate = 1 / (float)DIVIDE;
+	float3x3 mat = rot3D(dir, TWO_PI * divrate);
+	float3x3 matNext = rot3D(dirNext, TWO_PI * divrate);
+	
+	float3 rotyDir = normalize(mul(yDir, mat));
+	float3 rotyDirNext = normalize(mul(yDirNext, matNext));
+	
+	for(uint i = 0; i < DIVIDE; i++)
+	{
+		output0.pos = pos + (yDir * width);
+		output1.pos = pos + (rotyDir * width);
+		output2.pos = posNext + (yDirNext * width);
+		output3.pos = posNext + (rotyDirNext * width);
+	
+		output0.norm = yDir;
+		output1.norm = rotyDir;
+		output2.norm = yDirNext;
+		output3.norm = rotyDirNext;
+	
+		output0.uv = float2(breakBuffer[vid], i*divrate) * float2(500, 1);
+		output1.uv = float2(breakBuffer[vid], (i+1)*divrate) * float2(500, 1);
+		output2.uv = float2(breakBuffer[nextid], i*divrate) * float2(500, 1);
+		output3.uv = float2(breakBuffer[nextid], (i+1)*divrate) * float2(500, 1);
+	
+		outStream.Append(output0);
+		outStream.Append(output2);
+		outStream.Append(output1);
+		outStream.Append(output3);
+		
+		outStream.RestartStrip();
+
+		yDir = rotyDir;
+		yDirNext = rotyDirNext;
+		rotyDir = mul(rotyDir, mat);
+		rotyDirNext = mul(rotyDirNext, matNext);
+	}
+}
+
+GeometryShader StreamOutGS_Line = ConstructGSWithSO( CompileShader( gs_4_0, GS_Line() ), "POSITION.xyz;TEXCOORD1.xy", NULL,NULL,NULL,-1 );
+GeometryShader StreamOutGS_Tube = ConstructGSWithSO( CompileShader( gs_5_0, GS_Tube() ), "POSITION.xyz;NORMAL.xyz;TEXCOORD1.xy", NULL,NULL,NULL,-1 );
 
 technique10 LineCurve
 {
@@ -53,6 +156,16 @@ technique10 LineCurve
     {
         SetVertexShader( CompileShader( vs_4_0, VS() ) );
     	SetGeometryShader( CompileShader( gs_4_0, GS_Line() ) );
-        SetGeometryShader( StreamOutGS );
+        SetGeometryShader( StreamOutGS_Line );
+    }  
+}
+
+technique10 TubeCurve
+{
+    pass P0
+    {
+        SetVertexShader( CompileShader( vs_4_0, VS() ) );
+    	SetGeometryShader( CompileShader( gs_5_0, GS_Tube() ) );
+        SetGeometryShader( StreamOutGS_Tube );
     }  
 }

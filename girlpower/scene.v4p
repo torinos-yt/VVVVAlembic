@@ -241,7 +241,7 @@
    </PIN>
    <PIN pinname="Layer" visible="1">
    </PIN>
-   <PIN pinname="Size Default" slicecount="1" values="0.006">
+   <PIN pinname="Size Default" slicecount="1" values="0.0217">
    </PIN>
    <PIN pinname="Spread Count" visible="1" slicecount="1" values="2797">
    </PIN>
@@ -810,28 +810,28 @@
    <PIN pinname="Projection" visible="1">
    </PIN>
    </NODE>
-   <LINK srcnodeid="98" srcpinname="View" dstnodeid="63" dstpinname="View">
+   <LINK srcnodeid="89" srcpinname="View" dstnodeid="63" dstpinname="View" linkstyle="Bezier">
+   <LINKPOINT x="8760" y="8198">
+   </LINKPOINT>
+   <LINKPOINT x="16230" y="8198">
+   </LINKPOINT>
    </LINK>
-   <LINK srcnodeid="98" srcpinname="Projection" dstnodeid="63" dstpinname="Projection">
+   <LINK srcnodeid="89" srcpinname="Projection" dstnodeid="63" dstpinname="Projection" linkstyle="Bezier">
+   <LINKPOINT x="9045" y="8190">
+   </LINKPOINT>
+   <LINKPOINT x="16380" y="8190">
+   </LINKPOINT>
    </LINK>
-   <NODE systemname="AlembicScene (Alembic)" filename="%VVVV%\packs\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll" nodename="AlembicScene (Alembic)" componentmode="Hidden" id="99">
-   <BOUNDS type="Node" left="5760" top="2400" width="100" height="100">
-   </BOUNDS>
-   <BOUNDS type="Box" left="5760" top="2400" width="3000" height="3000">
-   </BOUNDS>
-   <PIN pinname="Filename" slicecount="1" values="C:\Users\iryut\Desktop\curve.abc">
-   </PIN>
-   <PIN pinname="Scene Out" visible="1">
-   </PIN>
-   </NODE>
-   <NODE systemname="Curve (3D Alembic)" filename="%VVVV%\packs\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll" nodename="Curve (3D Alembic)" componentmode="Hidden" id="100">
-   <BOUNDS type="Node" left="5745" top="2955" width="100" height="100">
-   </BOUNDS>
-   <BOUNDS type="Box" left="5745" top="2955" width="3000" height="3000">
-   </BOUNDS>
-   <PIN pinname="Scene In" visible="1">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="99" srcpinname="Scene Out" dstnodeid="100" dstpinname="Scene In">
+   <LINK srcnodeid="90" srcpinname="OutXYZ" dstnodeid="59" dstpinname="DataXYZ" linkstyle="Bezier">
+   <LINKPOINT x="10950" y="7200">
+   </LINKPOINT>
+   <LINKPOINT x="16350" y="7200">
+   </LINKPOINT>
+   </LINK>
+   <LINK srcnodeid="90" srcpinname="Out Bin Size" dstnodeid="58" dstpinname="Spread Count" linkstyle="Bezier">
+   <LINKPOINT x="11130" y="7410">
+   </LINKPOINT>
+   <LINKPOINT x="18510" y="7410">
+   </LINKPOINT>
    </LINK>
    </PATCH>
