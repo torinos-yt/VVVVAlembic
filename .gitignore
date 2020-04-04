@@ -1,6 +1,9 @@
 # .v4p backup files
 *~.xml
 
+#Debug scene
+scene_Debug.v4p
+
 # binary files
 nodes/plugins/*
 !nodes/plugins/Alembic.dll
