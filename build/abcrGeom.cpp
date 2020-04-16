@@ -577,7 +577,7 @@ namespace abcr
             this->VP.Proj = VMath::PerspectiveLH(FoV * VMath::DegToCyc, Near, Far, 1.0);
         }
 
-        this->VP.View = VMath::Inverse(VMath::RotateY(VMath::Pi) * abcrUtils::toVVVV(transform));
+        this->VP.View = VMath::Inverse(abcrUtils::toVVVV(transform));
     }
     
 }

@@ -7,17 +7,17 @@ namespace abcrUtils
 
     inline SlimDX::Vector2 toSlimDX(const Alembic::Abc::V2f& v)
     {
-        return SlimDX::Vector2(v.x, v.y);
+        return SlimDX::Vector2(v.x, 1 - v.y);
     }
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::V3f& v)
     {
-        return SlimDX::Vector3(-v.x, v.y, v.z);
+        return SlimDX::Vector3(v.x, v.y, -v.z);
     }
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::V3d& v)
     {
-        return SlimDX::Vector3(-v.x, v.y, v.z);
+        return SlimDX::Vector3(v.x, v.y, -v.z);
     }
 
     inline SlimDX::Vector3 toSlimDX(const Alembic::Abc::C3f& v)
@@ -37,7 +37,7 @@ namespace abcrUtils
 
     inline SlimDX::Quaternion toSlimDX(const Imath::Quatd& q)
     {
-        return SlimDX::Quaternion(-q.v[0], q.v[1], q.v[2], -q.r);
+        return SlimDX::Quaternion(-q.v[0], -q.v[1], q.v[2], q.r);
     }
 
     inline SlimDX::Matrix toSlimDX(const VVVV::Utils::VMath::Matrix4x4& m)
