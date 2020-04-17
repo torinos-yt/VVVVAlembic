@@ -333,15 +333,21 @@ namespace abcr
         AbcGeom::IN3fGeomParam N = mesh.getNormalsParam();
         N3fArraySamplePtr m_norms = N.getExpandedValue(ss).getVals();
         auto scope = N.getScope();
-        bool isIndexedNorm = scope == AbcGeom::kVertexScope || scope == AbcGeom::kVaryingScope;
+        bool isIndexedNorm = scope == AbcGeom::kFacevaryingScope;
 
         AbcGeom::IV2fGeomParam UV = mesh.getUVsParam();
-        AbcGeom::IV2fGeomParam::Sample uvValue;
-        V2fArraySamplePtr m_uvs;
-        uvValue = UV.getExpandedValue(ss);
-        m_uvs = uvValue.getVals();
         scope = UV.getScope();
-        bool isIndexedUV = scope == AbcGeom::kVertexScope || scope == AbcGeom::kVaryingScope;
+        bool isIndexedUV = scope == AbcGeom::kFacevaryingScope;
+
+        V2fArraySamplePtr m_uvs;
+        AbcGeom::IV2fGeomParam::Sample uvValue;
+
+        if(isIndexedUV) 
+            uvValue = UV.getIndexedValue(ss);
+        else
+            uvValue = UV.getExpandedValue(ss);
+
+        m_uvs = uvValue.getVals();
 
         size_t nPts = m_points->size();
         size_t nInds = m_indices->size();
@@ -393,7 +399,7 @@ namespace abcr
             const N3f* norms = m_norms->get();
             const V2f* uvs = m_uvs->get();
             const int32_t* indices = m_indices->get();
-            const auto uvInds = uvValue.getIndices()->get();
+            const auto UVinds = uvValue.getIndices()->get();
             
             if (hasRGB)
             {
@@ -406,8 +412,8 @@ namespace abcr
                     tri& t = m_triangles[j];
 
                     const V3f& v0 = points[indices[t[0]]];
-                    const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[UVinds[t[0]]] : uvs[t[0]];
                     const C3f& col0 = isIndexedColor ? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col3Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                           abcrUtils::toSlimDX(n0) ,
@@ -417,8 +423,8 @@ namespace abcr
                     vertexStream->Write(p0);
 
                     const V3f& v1 = points[indices[t[1]]];
-                    const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[1]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = isIndexedUV ? uvs[UVinds[t[1]]] : uvs[t[1]];
                     const C3f& col1 = isIndexedColor ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col3Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                           abcrUtils::toSlimDX(n1) ,
@@ -428,8 +434,8 @@ namespace abcr
                     vertexStream->Write(p1);
 
                     const V3f& v2 = points[indices[t[2]]];
-                    const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[UVinds[t[2]]] : uvs[t[2]];
                     const C3f& col2 = isIndexedColor ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col3Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                           abcrUtils::toSlimDX(n2) ,
@@ -450,8 +456,8 @@ namespace abcr
                     tri& t = m_triangles[j];
 
                     const V3f& v0 = points[indices[t[0]]];
-                    const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[UVinds[t[0]]] : uvs[t[0]];
                     const C4f& col0 = isIndexedColor ? cols[indices[t[0]]] : cols[t[0]];
                     const Pos3Norm3Tex2Col4Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                           abcrUtils::toSlimDX(n0) ,
@@ -461,8 +467,8 @@ namespace abcr
                     vertexStream->Write(p0);
 
                     const V3f& v1 = points[indices[t[1]]];
-                    const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[1]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = isIndexedUV ? uvs[UVinds[t[1]]] : uvs[t[1]];
                     const C4f& col1 = isIndexedColor ? cols[indices[t[1]]] : cols[t[1]];
                     const Pos3Norm3Tex2Col4Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                           abcrUtils::toSlimDX(n1) ,
@@ -472,8 +478,8 @@ namespace abcr
                     vertexStream->Write(p1);
 
                     const V3f& v2 = points[indices[t[2]]];
-                    const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[UVinds[t[2]]] : uvs[t[2]];
                     const C4f& col2 = isIndexedColor ? cols[indices[t[2]]] : cols[t[2]];
                     const Pos3Norm3Tex2Col4Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                           abcrUtils::toSlimDX(n2) ,
@@ -490,8 +496,8 @@ namespace abcr
                     tri& t = m_triangles[j];
 
                     const V3f& v0 = points[indices[t[0]]];
-                    const N3f& n0 = isIndexedNorm ? norms[indices[t[0]]] : norms[t[0]];
-                    const V2f& uv0 = isIndexedUV ? uvs[indices[t[0]]] : uvs[t[0]];
+                    const N3f& n0 = norms[t[0]];
+                    const V2f& uv0 = isIndexedUV ? uvs[UVinds[t[0]]] : uvs[t[0]];
                     const Pos3Norm3Tex2Vertex& p0 = { abcrUtils::toSlimDX(v0) ,
                                                       abcrUtils::toSlimDX(n0) ,
                                                       abcrUtils::toSlimDX(uv0) };
@@ -499,8 +505,8 @@ namespace abcr
                     vertexStream->Write(p0);
 
                     const V3f& v1 = points[indices[t[1]]];
-                    const N3f& n1 = isIndexedNorm ? norms[indices[t[1]]] : norms[t[1]];
-                    const V2f& uv1 = isIndexedUV ? uvs[indices[t[1]]] : uvs[t[2]];
+                    const N3f& n1 = norms[t[1]];
+                    const V2f& uv1 = isIndexedUV ? uvs[UVinds[t[1]]] : uvs[t[2]];
                     const Pos3Norm3Tex2Vertex& p1 = { abcrUtils::toSlimDX(v1) ,
                                                       abcrUtils::toSlimDX(n1) ,
                                                       abcrUtils::toSlimDX(uv1) };
@@ -508,8 +514,8 @@ namespace abcr
                     vertexStream->Write(p1);
 
                     const V3f& v2 = points[indices[t[2]]];
-                    const N3f& n2 = isIndexedNorm ? norms[indices[t[2]]] : norms[t[2]];
-                    const V2f& uv2 = isIndexedUV ? uvs[indices[t[2]]] : uvs[t[2]];
+                    const N3f& n2 = norms[t[2]];
+                    const V2f& uv2 = isIndexedUV ? uvs[UVinds[t[2]]] : uvs[t[2]];
                     const Pos3Norm3Tex2Vertex& p2 = { abcrUtils::toSlimDX(v2) ,
                                                       abcrUtils::toSlimDX(n2) ,
                                                       abcrUtils::toSlimDX(uv2) };
