@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="c:\program files (x86)\microsoft visual studio\2019\community\team tools\static analysis tools\fxcop\Xml\CodeAnalysisReport.xsl"?>
+<FxCopReport Version="16.0">
+ <Localized>
+  <String Key="Category">カテゴリ</String>
+  <String Key="Certainty">確実性</String>
+  <String Key="CollapseAll">すべて折りたたむ</String>
+  <String Key="CheckId">ID の確認</String>
+  <String Key="Error">エラー</String>
+  <String Key="Errors">エラー</String>
+  <String Key="ExpandAll">すべて展開</String>
+  <String Key="Help">ヘルプ</String>
+  <String Key="Line">行</String>
+  <String Key="Messages">メッセージ</String>
+  <String Key="LocationNotStoredInPdb">[場所は Pdb に格納されていません]</String>
+  <String Key="Project">プロジェクト</String>
+  <String Key="Resolution">解像度</String>
+  <String Key="Rule">ルール</String>
+  <String Key="RuleFile">規則ファイル</String>
+  <String Key="RuleDescription">規則の説明</String>
+  <String Key="Source">ソース</String>
+  <String Key="Status">状態</String>
+  <String Key="Target">ターゲット</String>
+  <String Key="Warning">警告</String>
+  <String Key="Warnings">警告</String>
+  <String Key="ReportTitle">コード分析レポート</String>
+ </Localized>
+ <Exceptions>
+  <Exception Keyword="CA0055" Kind="AssemblyLoad">
+   <Type>Microsoft.FxCop.Common.AssemblyLoadException</Type>
+   <ExceptionMessage>F:\vvvv\work\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll を読み込めませんでした。 モジュール 'VVVV.PluginInterfaces' を読み取り中に以下のエラーが発生しました: アセンブリ参照を解決できません: SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9。</ExceptionMessage>
+   <InnerType>Microsoft.FxCop.Sdk.InvalidMetadataException</InnerType>
+   <InnerExceptionMessage>モジュール 'VVVV.PluginInterfaces' を読み取り中に以下のエラーが発生しました: アセンブリ参照を解決できません: SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9。</InnerExceptionMessage>
+   <InnerStackTrace>   場所 Microsoft.FxCop.Sdk.Reader.HandleError(ModuleNode mod, String errorMessage)
+   場所 Microsoft.FxCop.Sdk.Reader.GetAssemblyFromReference(AssemblyReference assemblyReference)
+   場所 Microsoft.FxCop.Sdk.AssemblyReference.get_Assembly()
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromRef(Int32 i, Boolean expectStruct)
+   場所 Microsoft.FxCop.Sdk.Reader.TypeDefOrRefOrSpecIsClass(Int32 codedIndex)
+   場所 Microsoft.FxCop.Sdk.Reader.GetGenericParameter(Int32 index, Int32 parameterListIndex, Member parent)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeParametersFor(Int32 parentIndex, Member parent)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromDefHelper(Int32 i)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromDef(Int32 i)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeList(ModuleNode module)
+   場所 Microsoft.FxCop.Sdk.ModuleNode.get_Types()
+   場所 Microsoft.FxCop.Common.AssemblyNodeEx.GetAllModuleReferences(AssemblyNode assembly)
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssemblyThread()
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssembly(String fileName, Boolean hookUpResolver, Boolean getDebugInfo, Boolean useGlobalCache)
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssembly(String fileName, Boolean hookUpResolver)
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssembly(String fileName)
+   場所 Microsoft.FxCop.Common.IntrospectionAssemblyResolver.GetAssembly(String assemblyPath)
+   場所 Microsoft.FxCop.Common.FxCopAssemblyResolver`1.Resolve(AssemblyName reference, String referencingModulePath, Boolean resolvingForwardedType)
+   場所 Microsoft.FxCop.Common.FxCopAssemblyResolver`1.ResolveAssembly(AssemblyName reference, String referencingModuleLocation, Boolean optional, Boolean resolvingForwardedType)
+   場所 Microsoft.FxCop.Common.IntrospectionAssemblyResolver.ResolveAssemblyReference(AssemblyReference reference, ModuleNode module)
+   場所 Microsoft.FxCop.Sdk.ModuleNode.Resolve(AssemblyReference assemblyReference)
+   場所 Microsoft.FxCop.Sdk.Reader.GetAssemblyFromReference(AssemblyReference assemblyReference)
+   場所 Microsoft.FxCop.Sdk.AssemblyReference.get_Assembly()
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromRef(Int32 i, Boolean expectStruct)
+   場所 Microsoft.FxCop.Sdk.Reader.DecodeAndGetTypeDefOrRefOrSpec(Int32 codedIndex)
+   場所 Microsoft.FxCop.Sdk.Reader.GetInterfaces(Int32 i, Int32 firstInterfaceIndex, InterfaceCollection interfaces)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromDefHelper(Int32 i)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeFromDef(Int32 i)
+   場所 Microsoft.FxCop.Sdk.Reader.GetTypeList(ModuleNode module)
+   場所 Microsoft.FxCop.Sdk.ModuleNode.get_Types()
+   場所 Microsoft.FxCop.Common.AssemblyNodeEx.GetAllModuleReferences(AssemblyNode assembly)
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssemblyThread()
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssembly(String fileName, Boolean hookUpResolver, Boolean getDebugInfo, Boolean useGlobalCache)
+   場所 Microsoft.FxCop.Common.CommonUtilitiesProvider.GetAssembly(String fileName, Boolean hookUpResolver)
+   場所 Microsoft.FxCop.Engines.Introspection.IntrospectionAnalysisEngine.CanLoadTargetFile(TargetFile target)
+   場所 Microsoft.FxCop.Common.EngineManager.LoadTargets(TargetFile target, Boolean resetCounts, String loadEngine)</InnerStackTrace>
+  </Exception>
+  <Exception Keyword="CA0052" Kind="Engine">
+   <Type>Microsoft.FxCop.Sdk.FxCopException</Type>
+   <ExceptionMessage>ターゲットは選択されていませんでした。</ExceptionMessage>
+  </Exception>
+  <Exception Keyword="CA0058" Kind="Engine">
+   <Type>Microsoft.FxCop.Sdk.FxCopException</Type>
+   <ExceptionMessage>参照アセンブリ 'SlimDX, Version=4.0.13.43, Culture=neutral, PublicKeyToken=b1b0c32fd1ffe4f9' が見つかりませんでした。このアセンブリは分析のために必要で、F:\vvvv\work\VVVVAlembic\nodes\plugins\VVVV.Alembic.dll, F:\vvvv\work\VVVVAlembic\build\packages\VVVV.PluginInterfaces.34.2.0\build\net40\lib\x64\VVVV.PluginInterfaces.dll によって参照されています。</ExceptionMessage>
+  </Exception>
+ </Exceptions>
+</FxCopReport>
