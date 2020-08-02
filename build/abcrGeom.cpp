@@ -93,15 +93,13 @@ namespace abcr
     void abcrGeom::setMinMaxTime(T& obj)
     {
         TimeSamplingPtr tptr = obj.getSchema().getTimeSampling();
-        if (!obj.getSchema().isConstant())
+        size_t nSamples = obj.getSchema().getNumSamples();
+
+        if (nSamples > 0)
         {
-            size_t nSamples = obj.getSchema().getNumSamples();
-            if (nSamples > 0)
-            {
-                m_minTime = tptr->getSampleTime(0);
-                m_maxTime = tptr->getSampleTime(nSamples - 1);
-            }
-        }    
+            m_minTime = tptr->getSampleTime(0);
+            m_maxTime = tptr->getSampleTime(nSamples - 1);
+        }   
     }
 
     void abcrGeom::updateTimeSample(chrono_t time, Imath::M44f& transform)
@@ -301,7 +299,9 @@ namespace abcr
 
         this->geom = gcnew DX11VertexGeometry(this->m_context);
 
-        if (m_polymesh.getSchema().isConstant()) 
+        if (m_polymesh.getSchema().isConstant() && 
+                (hasRGB  && m_rgb.isConstant()) &&
+                (hasRGBA && m_rgba.isConstant()) ) 
         {
             this->set(m_minTime, this->transform);
             this->constant = true;
