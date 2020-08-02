@@ -67,8 +67,6 @@ namespace abcr
             gcroot<Dictionary<String^, abcrPtr>^> nameMap;
             gcroot<Dictionary<String^, abcrPtr>^> fullnameMap;
 
-            size_t currentIdx;
-
     };
 }
 }

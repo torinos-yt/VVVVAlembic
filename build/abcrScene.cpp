@@ -39,7 +39,6 @@ namespace abcr
         m_minTime = m_top->m_minTime;
         m_maxTime = m_top->m_maxTime;
 
-        currentIdx = -1;
 
         return true;
     }
@@ -48,23 +47,11 @@ namespace abcr
     {
         if (!m_top) return false;
 
-        auto timeSample = m_archive.getTimeSampling(1);
-        auto maxSample = m_archive.getMaxNumSamplesForTimeSamplingIndex(1);
-        auto nSample = maxSample / timeSample->getTimeSamplingType().getNumSamplesPerCycle();
-        auto idx = timeSample->getNearIndex(time, nSample).first;
+        Imath::M44f m;
+        m.makeIdentity();
+        m_top->updateTimeSample(time, m);
 
-        if (currentIdx != idx)
-        {
-            currentIdx = idx;
-
-            Imath::M44f m;
-            m.makeIdentity();
-            m_top->updateTimeSample(time, m);
-
-            return true;
-        }
-
-        return false;
+        return true;
 
     }
 
